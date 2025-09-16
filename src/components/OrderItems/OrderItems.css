@@ -1,103 +1,4 @@
-/* OrderItems.css - Pagination Styles */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  gap: 15px;
-}
 
-.pagination-btn {
-  padding: 8px 16px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background-color: #2980b9;
-}
-
-.pagination-btn:disabled {
-  background-color: #bdc3c7;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.page-info {
-  font-size: 14px;
-  color: #7f8c8d;
-  font-weight: 500;
-}
-
-.no-orders {
-  text-align: center;
-  padding: 40px;
-  color: #7f8c8d;
-  font-size: 16px;
-}
-
-/* Existing styles for cartitems */
-.cartitems {
-  margin: 20px 0;
-}
-
-.cartitems-header {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr 1fr;
-  gap: 10px;
-  font-weight: bold;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-}
-
-.cartitem {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr 1fr;
-  gap: 10px;
-  align-items: center;
-  padding: 15px 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.cartitem img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.cartitem button {
-  padding: 6px 12px;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.cartitem button:hover:not(:disabled) {
-  background-color: #c0392b;
-}
-
-.cartitem button:disabled {
-  background-color: #bdc3c7;
-  cursor: not-allowed;
-}
-
-.cartitem span {
-  font-size: 12px;
-  color: #7f8c8d;
-  font-style: italic;
-}
-
-/* Popup styles */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -112,81 +13,103 @@
 }
 
 .popup-box {
-  background: white;
+  background-color: white;
   padding: 25px;
   border-radius: 8px;
-  width: 400px;
-  max-width: 90%;
+  width: 90%;
+  max-width: 450px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .popup-box h2 {
   margin-top: 0;
   margin-bottom: 20px;
-  color: #2c3e50;
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
 }
 
 .radio-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
-.radio-group label {
+.radio-option {
   display: flex;
   align-items: center;
-  gap: 8px;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 
-.radio-group input[type="radio"] {
-  margin: 0;
+.radio-option:hover {
+  background-color: #f9f9f9;
+  border-color: #bbb;
+}
+
+.radio-option input[type="radio"] {
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+.radio-label {
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
 }
 
 .popup-buttons {
   display: flex;
-  gap: 10px;
   justify-content: flex-end;
+  gap: 12px;
 }
 
 .popup-buttons button {
-  padding: 8px 16px;
+  padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
 }
 
 .popup-buttons button[type="submit"] {
-  background-color: #3498db;
+  background-color: #4CAF50;
   color: white;
 }
 
 .popup-buttons button[type="submit"]:hover:not(:disabled) {
-  background-color: #2980b9;
+  background-color: #45a049;
+}
+
+.popup-buttons button[type="submit"]:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 .popup-buttons button[type="button"] {
-  background-color: #e0e0e0;
+  background-color: #f1f1f1;
   color: #333;
 }
 
 .popup-buttons button[type="button"]:hover {
-  background-color: #d0d0d0;
-}
-
-.popup-buttons button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  background-color: #ddd;
 }
 
 .error-message {
-  color: #e74c3c;
+  color: #d32f2f;
   margin-bottom: 15px;
-  font-size: 14px;
+  padding: 8px 12px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  font-size: 0.9rem;
 }
 
 .blur-background {
   filter: blur(4px);
+  pointer-events: none;
 }
