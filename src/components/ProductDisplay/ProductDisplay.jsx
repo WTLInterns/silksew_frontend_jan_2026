@@ -31,6 +31,7 @@
 //   const [selectedColor, setSelectedColor] = useState("")
 //   const [mainImage, setMainImage] = useState("")
 //   const [activeTab, setActiveTab] = useState("description")
+//   const [showLoginModal, setShowLoginModal] = useState(false)
 
 //   const navigate = useNavigate()
 
@@ -314,11 +315,7 @@
 
 //   const handleAddToCart = () => {
 //     if (!token) {
-//       toast.warn("Log in to add to cart.", {
-//         position: "top-right",
-//         autoClose: 1000,
-//       })
-//       navigate("/login")
+//       setShowLoginModal(true)
 //       return
 //     }
 
@@ -462,6 +459,41 @@
 //           </button>
 //         </div>
 //       </div>
+      
+//       {/* Glassy Login Modal */}
+//       {showLoginModal && (
+//         <div className="modal-overlay">
+//           <div className="modal-content glass-modal">
+//             <div className="modal-header">
+//               <h3>Login Required</h3>
+//               <button 
+//                 className="modal-close-btn"
+//                 onClick={() => setShowLoginModal(false)}
+//               >
+//                 &times;
+//               </button>
+//             </div>
+//             <div className="modal-body">
+//               <p>You need to login first to add items to your cart.</p>
+//             </div>
+//             <div className="modal-footer">
+//               <button 
+//                 className="modal-btn modal-btn-login"
+//                 onClick={() => navigate("/login")}
+//               >
+//                 Login
+//               </button>
+//               <button 
+//                 className="modal-btn modal-btn-signup"
+//                 onClick={() => navigate("/signup")}
+//               >
+//                 Sign Up
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+      
 //       <div className="descriptionbox">
 //         <div className="descriptionbox-navigator">
 //           <button
@@ -556,6 +588,7 @@ const ProductDisplay = () => {
   const [mainImage, setMainImage] = useState("")
   const [activeTab, setActiveTab] = useState("description")
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false)
 
   const navigate = useNavigate()
 
@@ -627,7 +660,7 @@ const ProductDisplay = () => {
     return []
   }
 
-    // Handle favorite toggle
+  // Handle favorite toggle
   const handleFavoriteClick = (e) => {
     if (!token) {
       e.preventDefault();
@@ -898,6 +931,12 @@ const ProductDisplay = () => {
     return colorData
   }
 
+  // Function to truncate description
+  const truncateDescription = (text, maxLength = 150) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  }
+
   return (
     <>
       <div className="productdisplay">
@@ -928,9 +967,19 @@ const ProductDisplay = () => {
         </div>
         <div className="productdisplay-right">
           <h2>{product.name}</h2>
-          <p className="description" style={{ textAlign: "justify" }}>
-            {product.description}
-          </p>
+          <div className="product-description-container">
+            <p className="description" style={{ textAlign: "justify" }}>
+              {descriptionExpanded ? product.description : truncateDescription(product.description)}
+            </p>
+            {product.description.length > 150 && (
+              <button 
+                className="description-toggle"
+                onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+              >
+                {descriptionExpanded ? 'Read Less' : 'Read More'}
+              </button>
+            )}
+          </div>
           <div className="productdisplay-right-prices">
             <div className="productdisplay-right-price-new">Rs {product.price}</div>
             {product.oldPrice && <div className="productdisplay-right-price-old">Rs {product.oldPrice}</div>}

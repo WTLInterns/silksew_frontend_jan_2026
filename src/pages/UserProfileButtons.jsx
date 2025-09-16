@@ -1,4 +1,4 @@
-// "use client"
+//  "use client"
 
 // import { useEffect, useState, useContext, useCallback } from "react"
 // import axios from "axios"
@@ -6,7 +6,7 @@
 // import { AuthContext } from "../context/AuthContext"
 // import { useNavigate } from "react-router-dom"
 // import profile_icon from "../components/Assets/profile_icon.png"
-// import "../pages/CSS/UserProfile.css" // Make sure to update this file with the new CSS
+// import "../pages/CSS/UserProfile.css"
 // import { ToastContainer, toast } from "react-toastify"
 // import "react-toastify/dist/ReactToastify.css"
 // import OrderItems from "../components/OrderItems/OrderItems"
@@ -25,7 +25,7 @@
 //   const [loadingProducts, setLoadingProducts] = useState(true)
 
 //   const menuItems = [
-//     { id: "info", title: "Info", icon: "👤" },
+//     { id: "info", title: "Personal Info", icon: "👤" },
 //     { id: "orders", title: "My Orders", icon: "📦" },
 //     { id: "logout", title: "Logout", icon: "🚪" },
 //   ]
@@ -120,7 +120,7 @@
 //       );
   
 //       toast.success("Profile Successfully Updated.");
-//       setIsEditing(false); // Close edit form after successful update
+//       setIsEditing(false);
       
 //     } catch (error) {
 //       console.error("Update failed:", error);
@@ -138,8 +138,8 @@
 //         return (
 //           <div className="tab-content">
 //             {!isEditing && (
-//               <h2 style={{ color: "#3498db", display: "flex", justifyContent: "center", fontWeight: "bold", marginTop:50 }}>
-//                 User Information
+//               <h2 className="tab-title">
+//                 Personal Information
 //               </h2>
 //             )}
 
@@ -149,13 +149,15 @@
 //       case "orders":
 //         return (
 //           <div className="tab-content order-content">
-//             <h2 style={{ color: "#3498db", display: "flex", justifyContent: "center", fontWeight: "bold",marginTop:30 }}>
-//               My Orders
+//             <h2 className="tab-title">
+//               Order History
 //             </h2>
 //             {loadingProducts ? (
 //               <div className="loading">Loading orders...</div>
 //             ) : (
-//               <OrderItems />
+//               <div className="orders-container">
+//                 <OrderItems />
+//               </div>
 //             )}
 //           </div>
 //         )
@@ -165,24 +167,23 @@
 //   }
 
 //   const renderUserCard = () => (
-//     <section className="container-fluid">
-//       <div className="profile-bg container">
-//         <div className="content">
-//           <img src={profile_icon || "/placeholder.svg"} className="user-logo" alt="Logo" />
-//           <h4>
-//             <strong>User Name : </strong>
-//             {userData?.name}
-//           </h4>
-//           <br />
-//           <h4>
-//             <strong>Phone : </strong> {userData?.phone || "Not provided"}
-//           </h4>
-//           <br />
-//           <h4>
-//             <strong>Email : </strong> {userData?.email}
-//           </h4>
+//     <section className="profile-container">
+//       <div className="profile-card">
+//         <div className="profile-header">
+//           <img src={profile_icon || "/placeholder.svg"} className="user-avatar" alt="User Avatar" />
+//           <h3 className="user-name">{userData?.name}</h3>
 //         </div>
-//         <button className="btn btn-default" onClick={() => setIsEditing(true)}>
+//         <div className="profile-details">
+//           <div className="detail-item">
+//             <span className="detail-label">Phone:</span>
+//             <span className="detail-value">{userData?.phone || "Not provided"}</span>
+//           </div>
+//           <div className="detail-item">
+//             <span className="detail-label">Email:</span>
+//             <span className="detail-value">{userData?.email}</span>
+//           </div>
+//         </div>
+//         <button className="edit-profile-btn" onClick={() => setIsEditing(true)}>
 //           Edit Profile
 //         </button>
 //       </div>
@@ -190,18 +191,18 @@
 //   )
 
 //   const renderUserForm = () => (
-//     <section className="container py-9 mx-auto">
-//       <div className="bg-white p-20 rounded-xl shadow-lg mx-auto mt-10" >
-//         <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">Edit Profile</h2>
+//     <section className="edit-profile-container">
+//       <div className="edit-profile-card">
+//         <h2 className="edit-profile-title">Edit Profile</h2>
 
-//         <form onSubmit={updateProfile}>
-//           <div className="mb-6">
-//             <label htmlFor="name" className="block text-xl font-medium text-gray-700 mb-2">
+//         <form onSubmit={updateProfile} className="profile-form">
+//           <div className="form-group">
+//             <label htmlFor="name" className="form-label">
 //               Name
 //             </label>
 //             <input
 //               type="text"
-//               className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-300 ease-in-out"
+//               className="form-input"
 //               id="name"
 //               name="name"
 //               value={userData?.name || ""}
@@ -211,13 +212,13 @@
 //             />
 //           </div>
 
-//           <div className="mb-6">
-//             <label htmlFor="phone" className="block text-xl font-medium text-gray-700 mb-2">
+//           <div className="form-group">
+//             <label htmlFor="phone" className="form-label">
 //               Phone
 //             </label>
 //             <input
 //               type="tel"
-//               className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-300 ease-in-out"
+//               className="form-input"
 //               id="phone"
 //               name="phone"
 //               value={userData?.phone || ""}
@@ -226,13 +227,13 @@
 //             />
 //           </div>
 
-//           <div className="mb-6">
-//             <label htmlFor="email" className="block text-xl font-medium text-gray-700 mb-2">
+//           <div className="form-group">
+//             <label htmlFor="email" className="form-label">
 //               Email address
 //             </label>
 //             <input
 //               type="email"
-//               className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-300 ease-in-out"
+//               className="form-input"
 //               id="email"
 //               name="email"
 //               value={userData?.email || ""}
@@ -242,10 +243,17 @@
 //             />
 //           </div>
 
-//           <div className="gap-5" >
+//           <div className="form-actions">
+//             <button
+//               type="button"
+//               className="cancel-btn"
+//               onClick={() => setIsEditing(false)}
+//             >
+//               Cancel
+//             </button>
 //             <button
 //               type="submit"
-//               className="flex-1 p-4 bg-indigo-500 text-white text-xl font-semibold  hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition duration-300 ease-in-out"
+//               className="save-btn"
 //             >
 //               Save Changes
 //             </button>
@@ -258,10 +266,13 @@
 //   return (
 //     <div className="user-profile-container">
 //       <button className="mobile-menu-toggle" onClick={toggleSidebar}>
-//         ☰
+//         <span className="toggle-icon">☰</span>
+//         <span className="toggle-text">Menu</span>
 //       </button>
 //       <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-//         <h2 className="sidebar-title">User Profile</h2>
+//         <div className="sidebar-header">
+//           <h2 className="sidebar-title">My Account</h2>
+//         </div>
 //         <ul className="sidebar-menu">
 //           {menuItems.map((item) => (
 //             <li key={item.id} className="sidebar-menu-item">
@@ -270,11 +281,14 @@
 //                 onClick={() => handleTabClick(item.id)}
 //               >
 //                 <span className="sidebar-menu-icon">{item.icon}</span>
-//                 <span >{item.title}</span>
+//                 <span className="sidebar-menu-text">{item.title}</span>
 //               </button>
 //             </li>
 //           ))}
 //         </ul>
+//         <div className="sidebar-footer">
+//           <p className="user-email">{userData?.email}</p>
+//         </div>
 //       </div>
 //       <main className="main-content">
 //         {renderContent()}
@@ -284,12 +298,7 @@
 //   )
 // }
 
-// export default UserProfileButtons   
-
-
-
-
-
+// export default UserProfileButtons
 
 
 
@@ -320,9 +329,9 @@ const UserProfileButtons = () => {
   const [loadingProducts, setLoadingProducts] = useState(true)
 
   const menuItems = [
-    { id: "info", title: "Personal Info", icon: "👤" },
-    { id: "orders", title: "My Orders", icon: "📦" },
-    { id: "logout", title: "Logout", icon: "🚪" },
+    { id: "info", title: "Personal Info" },
+    { id: "orders", title: "My Orders" },
+    { id: "logout", title: "Logout" },
   ]
 
   useEffect(() => {
@@ -432,21 +441,12 @@ const UserProfileButtons = () => {
       case "info":
         return (
           <div className="tab-content">
-            {!isEditing && (
-              <h2 className="tab-title">
-                Personal Information
-              </h2>
-            )}
-
             {isEditing ? renderUserForm() : renderUserCard()}
           </div>
         )
       case "orders":
         return (
           <div className="tab-content order-content">
-            <h2 className="tab-title">
-              Order History
-            </h2>
             {loadingProducts ? (
               <div className="loading">Loading orders...</div>
             ) : (
@@ -463,21 +463,23 @@ const UserProfileButtons = () => {
 
   const renderUserCard = () => (
     <section className="profile-container">
-      <div className="profile-card">
+      <div className="profile-info-card">
         <div className="profile-header">
-          <img src={profile_icon || "/placeholder.svg"} className="user-avatar" alt="User Avatar" />
-          <h3 className="user-name">{userData?.name}</h3>
+          <h3 className="user-name-bold">{userData?.name || "John Doe"}</h3>
         </div>
-        <div className="profile-details">
-          <div className="detail-item">
+        
+        <div className="profile-details-grid">
+          <div className="detail-row">
+            <span className="detail-label">Email</span>
+            <span className="detail-value email-value">{userData?.email || "john.doe@example.com"}</span>
+          </div>
+          
+          <div className="detail-row">
             <span className="detail-label">Phone:</span>
-            <span className="detail-value">{userData?.phone || "Not provided"}</span>
-          </div>
-          <div className="detail-item">
-            <span className="detail-label">Email:</span>
-            <span className="detail-value">{userData?.email}</span>
+            <span className="detail-value">{userData?.phone || "+1 (556) 123-4567"}</span>
           </div>
         </div>
+        
         <button className="edit-profile-btn" onClick={() => setIsEditing(true)}>
           Edit Profile
         </button>
@@ -566,6 +568,14 @@ const UserProfileButtons = () => {
       </button>
       <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
+          <div className="profile-sidebar">
+            <img src={profile_icon} className="sidebar-profile-icon" alt="Profile" />
+            <div className="sidebar-profile-info">
+              <div className="sidebar-name">{userData?.name || "John Doe"}</div>
+            </div>
+          </div>
+        </div>
+        <div className="sidebar-title-section">
           <h2 className="sidebar-title">My Account</h2>
         </div>
         <ul className="sidebar-menu">
@@ -575,15 +585,12 @@ const UserProfileButtons = () => {
                 className={`sidebar-menu-button ${activeTab === item.id ? "active" : ""}`}
                 onClick={() => handleTabClick(item.id)}
               >
-                <span className="sidebar-menu-icon">{item.icon}</span>
                 <span className="sidebar-menu-text">{item.title}</span>
+                {activeTab === item.id && <span className="active-indicator"></span>}
               </button>
             </li>
           ))}
         </ul>
-        <div className="sidebar-footer">
-          <p className="user-email">{userData?.email}</p>
-        </div>
       </div>
       <main className="main-content">
         {renderContent()}

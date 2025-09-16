@@ -1,302 +1,12 @@
-// "use client"
-// import { useContext, useState } from "react"
-// import { ShopContext } from "../../context/ShopContext"
-// import razorpay from "../Assets/razorpay_logo.png"
-// import CashonDelivery from "../Assets/CashonDelivery.jpg"
-// import stripe from "../Assets/stripe_logo.png"
-// import { toast } from "react-toastify"
-// import "react-toastify/dist/ReactToastify.css"
-// import axios from "axios"
-// import { BASEURL } from "../../config"
-// import { useNavigate } from "react-router-dom"
-// import { useLocation } from "react-router-dom";
-// import "./Checkout.css"
-
-// const OrderSuccessPopup = () => {
-//   return (
-//     <div className="popup-overlay">
-//       <div className="popup-content">
-//         <h2>Order Placed Successfully!</h2>
-//         <p>Thank you for your purchase. Your order has been placed and will be processed soon.</p>
-//       </div>
-//     </div>
-//   )
-// }
-
-// const Checkout = () => {
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const offerCode = location.state?.offerCode || ""
-//   const [method, setMethod] = useState("Cash on Delivery")
-//   const [showSuccessPopup, setShowSuccessPopup] = useState(false)
-//   const [isLoading, setIsLoading] = useState(false) // Added loading state
-//   const { cartItems, delivery_fee, setCartItems, getTotalCartAmount, products } = useContext(ShopContext)
-//   const [formData, setFormData] = useState({
-//     firstName: "",
-//     lastName: "",
-//     street: "",
-//     landMark: "",
-//     city: "",
-//     zipcode: "",
-//     country: "",
-//     state: "",
-//     phone: "",
-//     email: "",
-//   })
-
-//   const subtotal = getTotalCartAmount()
-//   const totalAmount = subtotal + delivery_fee
-
-//   const onChangeHandler = (event) => {
-//     const { name, value } = event.target
-//     setFormData((data) => ({ ...data, [name]: value }))
-//   }
-//   const onSubmitHandler = async (event) => {
-//     event.preventDefault()
-//     setIsLoading(true) 
-//     setShowSuccessPopup(true)
-
-//     try {
-//       const token = localStorage.getItem("token")
-//       if (!token) {
-//         toast.error("You are not authorized. Please log in.")
-//         navigate("/login")
-//         return
-//       }
-
-//       if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
-//         console.error("Cart is empty or invalid.")
-//         toast.error("Your cart is empty!")
-//         return
-//       }
-
-//       const orderItems = cartItems
-//         .map((cartItem) => {
-//           const product = products.find((p) => p._id === cartItem.productId)
-//           if (!product) {
-//             console.warn(`Product not found for productId: ${cartItem.productId}`)
-//             return null
-//           }
-//           return {
-//             productId: cartItem.productId,
-//             size: cartItem.size,
-//             productName: product.name,
-//             quantity: cartItem.quantity,
-//             price: product.price,
-//           }
-//         })
-//         .filter((item) => item !== null)
-
-//       if (orderItems.length === 0) {
-//         toast.error("No valid products found in cart.")
-//         return
-//       }
-
-//       const totalAmount = getTotalCartAmount() + delivery_fee
-
-//       const orderData = {
-//         address: formData,
-//         items: orderItems,
-//         totalAmount,
-//         paymentMethod: method,
-//         offerCode: offerCode || undefined, 
-//       }
-
-
-//       const response = await axios.post(`${BASEURL}/api/orders/place`, orderData, {
-//         headers: { Authorization: `Bearer ${token}` },
-//       })
-
-//       if (response.data.success) {
-//         setCartItems([])
-//         setTimeout(() => {
-//           setShowSuccessPopup(false)
-//           setIsLoading(false) 
-//           navigate("/")
-//         }, 2000)
-//       } else {
-//         setShowSuccessPopup(false)
-//         setIsLoading(false) 
-//         toast.error(response.data.message || "Failed to place order.")
-//       }
-//     } catch (error) {
-//       console.error(error)
-//       setShowSuccessPopup(false)
-//       setIsLoading(false) 
-//       toast.error(error.response?.data?.message || "An error occurred while placing your order.")
-//     }
-//   }
-
-//   return (
-//     <form className="form-container" onSubmit={onSubmitHandler}>
-//       <div className="form-left">
-//         <fieldset className="payment-method">
-//           <legend>Payment Options</legend>
-//           <div className="payment-options">
-//             <div
-//               className={`payment-option ${method === "Stripe" ? "selected" : ""}`}
-//               onClick={() => setMethod("Stripe")}
-//             >
-//               <img src={stripe || "/placeholder.svg"} alt="Stripe" className="payment-logo" />
-//             </div>
-//             <div
-//               className={`payment-option ${method === "Razorpay" ? "selected" : ""}`}
-//               onClick={() => setMethod("Razorpay")}
-//             >
-//               <img src={razorpay || "/placeholder.svg"} alt="Razorpay" className="payment-logo" />
-//             </div>
-//             <div
-//               className={`payment-option ${method === "CashonDelivery" ? "selected" : ""}`}
-//               onClick={() => setMethod("Cash on Delivery")}
-//             >
-//               <img src={CashonDelivery || "/placeholder.svg"} alt="CashonDelivery" className="payment-logo" />
-//             </div>
-//           </div>
-//         </fieldset>
-
-//         <div className="form-title">
-//           <h2>Shipping Address</h2>
-//         </div>
-//         <div className="form-row">
-//           <input
-//             type="text"
-//             name="firstName"
-//             value={formData.firstName}
-//             className="form-input"
-//             placeholder="First Name"
-//             onChange={onChangeHandler}
-//             required
-//           />
-//           <input
-//             type="text"
-//             name="lastName"
-//             value={formData.lastName}
-//             className="form-input"
-//             placeholder="Last Name"
-//             onChange={onChangeHandler}
-//             required
-//           />
-//         </div>
-//         <input
-//           type="email"
-//           name="email"
-//           value={formData.email}
-//           className="form-input"
-//           placeholder="Email Address"
-//           onChange={onChangeHandler}
-//           required
-//         />
-//         <input
-//           type="tel"
-//           name="phone"
-//           value={formData.phone}
-//           className="form-input"
-//           placeholder="Phone Number"
-//           onChange={onChangeHandler}
-//           required
-//         />
-//         <input
-//           type="text"
-//           name="street"
-//           value={formData.street}
-//           className="form-input"
-//           placeholder="Street Address"
-//           onChange={onChangeHandler}
-//           required
-//         />
-//         <input
-//           type="text"
-//           name="landMark"
-//           value={formData.landMark}
-//           className="form-input"
-//           placeholder="Landmark"
-//           onChange={onChangeHandler}
-//         />
-//         <div className="form-row">
-//           <input
-//             type="text"
-//             name="city"
-//             value={formData.city}
-//             className="form-input"
-//             placeholder="City"
-//             onChange={onChangeHandler}
-//             required
-//           />
-//           <input
-//             type="text"
-//             name="state"
-//             value={formData.state}
-//             className="form-input"
-//             placeholder="State"
-//             onChange={onChangeHandler}
-//             required
-//           />
-//         </div>
-//         <div className="form-row">
-//           <input
-//             type="text"
-//             name="zipcode"
-//             value={formData.zipcode}
-//             className="form-input"
-//             placeholder="Zipcode"
-//             onChange={onChangeHandler}
-//             required
-//           />
-//           <input
-//             type="text"
-//             name="country"
-//             value={formData.country}
-//             className="form-input"
-//             placeholder="Country"
-//             onChange={onChangeHandler}
-//             required
-//           />
-//         </div>
-//       </div>
-
-//       <div className="form-right">
-//         <div className="cart-total">
-//           <h3>Cart Totals</h3>
-//           <div className="cart-total-item">
-//             <span>Subtotal: </span>
-//             <span> Rs {subtotal} </span>
-//           </div>
-//           <div className="cart-total-item">
-//             <span>Shipping Fee: </span>
-//             <span> Rs {delivery_fee} </span>
-//           </div>
-//           <div className="cart-total-item">
-//             <span>Total: </span>
-//             <span> Rs {totalAmount} </span>
-//           </div>
-//         </div>
-
-//         <button type="submit" className="submit-button" disabled={isLoading}>
-//           {isLoading ? "Processing..." : "PLACE ORDER"}
-//         </button>
-//       </div>
-
-//       {showSuccessPopup && <OrderSuccessPopup />}
-//     </form>
-//   )
-// }
-
-// export default Checkout
-
-
-
-"use client"
 import { useContext, useState } from "react"
 import { ShopContext } from "../../context/ShopContext"
 import razorpay from "../Assets/razorpay_logo.png"
-import CashonDelivery from "../Assets/CashonDelivery.jpg"
-import stripe from "../Assets/stripe_logo.png"
+import CashonDelivery from "../Assets/cod.png"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import axios from "axios"
 import { BASEURL } from "../../config"
-import { useNavigate } from "react-router-dom"
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"
 import "./Checkout.css"
 
 const OrderSuccessPopup = () => {
@@ -314,9 +24,9 @@ const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const offerCode = location.state?.offerCode || ""
-  const [method, setMethod] = useState("Cash on Delivery")
+  const [method, setMethod] = useState("") // 🔹 no default
   const [showSuccessPopup, setShowSuccessPopup] = useState(false)
-  const [isLoading, setIsLoading] = useState(false) // Added loading state
+  const [isLoading, setIsLoading] = useState(false)
   const { cartItems, delivery_fee, setCartItems, getTotalCartAmount, products } = useContext(ShopContext)
   const [formData, setFormData] = useState({
     firstName: "",
@@ -339,7 +49,7 @@ const Checkout = () => {
     setFormData((data) => ({ ...data, [name]: value }))
   }
 
-  // ---------- Razorpay helpers (ADDED) ----------
+  // ---------- Razorpay helpers ----------
   const loadRazorpayScript = () =>
     new Promise((resolve) => {
       if (window.Razorpay) return resolve(true);
@@ -354,11 +64,14 @@ const Checkout = () => {
     try {
       setIsLoading(true);
 
-      // 0) Optional auth header if your payment endpoints require auth
       const token = localStorage.getItem("token");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-      // 1) Make sure script is ready
+      if (!validateForm()) {
+        setIsLoading(false);
+        return;
+      }
+
       const ok = await loadRazorpayScript();
       if (!ok) {
         toast.error("Failed to load Razorpay. Check your internet connection.");
@@ -366,19 +79,12 @@ const Checkout = () => {
         return;
       }
 
-      // 2) Create order on backend with cart amount (INR)
-      console.log("Hitting:", `${BASEURL}/api/payment/create-order`);
       const createRes = await axios.post(
         `${BASEURL}/api/payment/create-order`,
-        { amount: totalAmount }, // INR -> backend converts to paise
+        { amount: totalAmount },
         { headers }
       );
-      const order = createRes.data; // should contain { id, amount, currency, ... }
-
-
-      // 3) Configure Razorpay
-      console.log("ENV key:", process.env.REACT_APP_RAZORPAY_KEY_ID);
-      console.log("VITE key:", import.meta?.env?.VITE_RAZORPAY_KEY_ID);
+      const order = createRes.data;
 
       const key = process.env.REACT_APP_RAZORPAY_KEY_ID || import.meta?.env?.VITE_RAZORPAY_KEY_ID || "";
       if (!key) {
@@ -389,30 +95,26 @@ const Checkout = () => {
 
       const options = {
         key,
-        amount: order.amount,      // paise (backend returns this)
-        currency: order.currency,  // "INR"
+        amount: order.amount,
+        currency: order.currency,
         name: "Silksew",
         description: "Order Payment",
-        order_id: order.id,        // razorpay order id
+        order_id: order.id,
         handler: async function (response) {
-          // Called on success
           try {
-            // 4) Verify signature on backend
             const verifyRes = await axios.post(
               `${BASEURL}/api/payment/verify`,
               {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-                amount: totalAmount, // send INR for your records
+                amount: totalAmount,
               },
               { headers }
             );
 
             if (verifyRes.data?.success) {
               toast.success("Payment successful ✅");
-              // (Optional) After payment success you can now submit your order to /api/orders/place
-              // using the same logic below, or keep your existing flow as-is.
               setShowSuccessPopup(true);
             } else {
               toast.error(verifyRes.data?.message || "Payment verification failed");
@@ -428,11 +130,7 @@ const Checkout = () => {
           contact: formData.phone,
         },
         theme: { color: "#3399cc" },
-        modal: {
-          ondismiss: function () {
-            // user closed the modal
-          }
-        }
+        modal: { ondismiss: function () {} }
       };
 
       const rzp = new window.Razorpay(options);
@@ -446,16 +144,78 @@ const Checkout = () => {
   };
 
   const handleRazorpayClick = async (e) => {
-    // This runs when user clicks PLACE ORDER and Razorpay is selected.
-    // We DO NOT submit the form (so required fields don't block).
     e.preventDefault();
     await openRazorpayPopup();
   };
   // ---------- End Razorpay helpers ----------
 
+  // ✅ Validation function
+  const validateForm = () => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    const phoneRegex = /^[0-9]{10}$/
+    const zipRegex = /^[0-9]{5,6}$/
+
+    if (!formData.firstName.trim()) {
+      toast.error("First name is required.")
+      return false
+    }
+    if (!formData.lastName.trim()) {
+      toast.error("Last name is required.")
+      return false
+    }
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address.")
+      return false
+    }
+    if (!phoneRegex.test(formData.phone)) {
+      toast.error("Phone number must be 10 digits.")
+      return false
+    }
+    if (!formData.street.trim()) {
+      toast.error("Street address is required.")
+      return false
+    }
+    if (!formData.city.trim()) {
+      toast.error("City is required.")
+      return false
+    }
+    if (!formData.state.trim()) {
+      toast.error("State is required.")
+      return false
+    }
+    if (!zipRegex.test(formData.zipcode)) {
+      toast.error("Zipcode must be 5 or 6 digits.")
+      return false
+    }
+    if (!formData.country.trim()) {
+      toast.error("Country is required.")
+      return false
+    }
+    return true
+  }
+
   const onSubmitHandler = async (event) => {
     event.preventDefault()
     setIsLoading(true)
+
+    // 🔹 Payment option validation first
+    if (!method) {
+      toast.error("Please select payment option.")
+      setIsLoading(false)
+      return
+    }
+
+    if (!validateForm()) {
+      setIsLoading(false)
+      return
+    }
+
+    if (method !== "Cash on Delivery") {
+      toast.error("Please select Cash on Delivery to place order.")
+      setIsLoading(false)
+      return
+    }
+
     setShowSuccessPopup(true)
 
     try {
@@ -535,22 +295,16 @@ const Checkout = () => {
           <legend>Payment Options</legend>
           <div className="payment-options">
             <div
-              className={`payment-option ${method === "Stripe" ? "selected" : ""}`}
-              onClick={() => setMethod("Stripe")}
-            >
-              <img src={stripe || "/placeholder.svg"} alt="Stripe" className="payment-logo" />
-            </div>
-            <div
               className={`payment-option ${method === "Razorpay" ? "selected" : ""}`}
               onClick={() => setMethod("Razorpay")}
             >
-              <img src={razorpay || "/placeholder.svg"} alt="Razorpay" className="payment-logo" />
+              <img src={razorpay} alt="Razorpay" className="payment-logo" />
             </div>
             <div
-              className={`payment-option ${method === "CashonDelivery" ? "selected" : ""}`}
+              className={`payment-option ${method === "Cash on Delivery" ? "selected" : ""}`}
               onClick={() => setMethod("Cash on Delivery")}
             >
-              <img src={CashonDelivery || "/placeholder.svg"} alt="CashonDelivery" className="payment-logo" />
+              <img src={CashonDelivery} alt="CashonDelivery" className="payment-logo" />
             </div>
           </div>
         </fieldset>
@@ -672,12 +426,12 @@ const Checkout = () => {
           </div>
         </div>
 
-        {/* KEY PART: for Razorpay we make the button act like a normal button to bypass required fields */}
         <button
           type={method === "Razorpay" ? "button" : "submit"}
           className="submit-button"
           disabled={isLoading}
           onClick={method === "Razorpay" ? handleRazorpayClick : undefined}
+          style={{backgroundColor:"black"}}
         >
           {isLoading ? "Processing..." : "PLACE ORDER"}
         </button>

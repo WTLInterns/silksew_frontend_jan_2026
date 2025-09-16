@@ -62,17 +62,17 @@
 
 //   return (
 //     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 py-20 mt-8">
-//       <div className="bg-white rounded-2xl shadow-xl overflow-hidden w-full max-w-4xl mx-auto flex flex-col md:flex-row">
+//       <div className="bg-white rounded-2xl shadow-xl overflow-hidden w-full max-w-4xl mx-auto flex flex-col md:flex-row login-container">
 //         {/* Image Section */}
-//         <div className="hidden md:block bg-red-500 relative h-full min-h-[500px]">
+//         <div className="hidden md:block md:w-1/2 bg-red-500 relative login-image-container">
 //           <img
 //             src="https://img.freepik.com/premium-photo/smiling-character-holding-glowing-shopping-icon-surrounded-by-products-solid-background_720722-34520.jpg?w=740"
 //             alt="Login Background"
 //             className="w-full h-full object-cover opacity-85"
 //           />
-//           <div className="absolute inset-0 p-8">
+//           <div className="absolute inset-0 p-8 flex flex-col justify-center">
 //             <div className="text-white text-center">
-//               <h3 className="text-2xl font-bold mt-7">Login</h3>
+//               <h3 className="text-2xl font-bold">Login</h3>
 //               <p className="max-w-xs mx-auto text-2xl font-bold mt-20">
 //                 Get access to your Orders, Wishlist and Recommendations
 //               </p>
@@ -81,7 +81,7 @@
 //         </div>
 
 //         {/* Login Form Section */}
-//         <div className="w-full md:w-1/2 p-8 flex flex-col bg-white rounded-2xl shadow-xl">
+//         <div className="w-full md:w-1/2 p-8 flex flex-col bg-white rounded-2xl shadow-xl login-form-container">
 //           <h2 className="text-2xl font-bold text-orange-500 text-center mb-6">
 //             Welcome Back
 //           </h2>
@@ -167,10 +167,6 @@
 // export default Login;
 
 
-
-
-
-
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { BASEURL } from "../config";
@@ -195,9 +191,42 @@ function Login() {
     navigate("/reset-password"); // ✅ match your route
   };
 
+  // ✅ Simple validation function
+  const validateForm = () => {
+    if (!email) {
+      setError("Email is required");
+      return false;
+    }
+    // Email regex check
+    // Stronger email regex check
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return false;
+    }
+
+
+    if (!password) {
+      setError("Password is required");
+      return false;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return false;
+    }
+
+    return true;
+  };
+
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     setError("");
+
+    // ✅ Run validation before API call
+    if (!validateForm()) {
+      toast.error("Please fix the errors before submitting.");
+      return;
+    }
 
     try {
       const response = await axios.post(BASEURL + "/api/users/login", {
@@ -338,5 +367,6 @@ function Login() {
 }
 
 export default Login;
+
 
 

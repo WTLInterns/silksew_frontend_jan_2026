@@ -1,4 +1,3 @@
-
 .hero-section {
   position: relative;
   height: 100vh;
@@ -13,7 +12,7 @@
 
 .hero-slide {
   position: absolute;
-  top: 0;
+  top: 5;
   left: 0;
   width: 100%;
   height: 100%;
@@ -76,7 +75,7 @@
 }
 
 .hero-eyebrow::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 50%;
@@ -124,7 +123,7 @@
 }
 
 .hero-button::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -202,26 +201,232 @@
   transform: scale(1.3);
 }
 
+/* Sale Section Styles - MOVED OUTSIDE OF MEDIA QUERY */
+.sale-container {
+  padding: 0px 0px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.sale-banner {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: all 0.5s ease;
+  color: white;
+  display: flex;
+  position: relative;
+  animation: colorChange 9s infinite;
+}
+
+@keyframes colorChange {
+  0% {
+    background-color: #ff3e6c;
+  }
+  33% {
+    background-color: #ff9f00;
+  }
+  66% {
+    background-color: #00bfff;
+  }
+  100% {
+    background-color: #ff3e6c;
+  }
+}
+
+.sale-content {
+  padding: 60px;
+  width: 60%;
+  margin-left: 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.sale-image {
+  width: 50%;
+  margin-right: 40px;
+  position: relative;
+  overflow: hidden;
+  padding: 30px;
+}
+
+.sale-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.sale-status {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  animation: fadeInOut 3s infinite;
+}
+
+@keyframes fadeInOut {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.sale-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.sale-collection {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  opacity: 0.9;
+}
+
+.sale-discount {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #fff;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.sale-description {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  max-width: 100%;
+  line-height: 1.6;
+}
+
+.sale-buttons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.sale-button {
+  padding: 12px 30px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.sale-button.primary {
+  background: white;
+  color: #ff3e6c;
+  border: 2px solid white;
+}
+
+.sale-button.primary:hover {
+  background: transparent;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.sale-button.secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.sale-button.secondary:hover {
+  background: white;
+  color: #ff3e6c;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
 /* Responsive adaptations */
+@media (max-width: 1024px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.8rem;
+  }
+
+  .sale-content {
+    padding: 30px;
+    width: 55%;
+  }
+
+  .sale-image {
+    width: 45%;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 900px) {
+  .sale-banner {
+    flex-direction: column;
+  }
+
+  .sale-content,
+  .sale-image {
+    width: 100%;
+  }
+
+  .sale-image {
+    height: 300px;
+    padding: 20px;
+  }
+}
+
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2.5rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1.5rem;
   }
-  
-  .hero-description {
-    font-size: 1rem;
-  }
-  
+
   .hero-content {
     padding: 0 5%;
   }
-  
-  .hero-overlay {
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 100%);
+
+  .sale-content {
+    padding: 30px 20px;
+    text-align: center;
+  }
+
+  .sale-title {
+    font-size: 2rem;
+  }
+
+  .sale-collection {
+    font-size: 1.3rem;
+  }
+
+  .sale-discount {
+    font-size: 1.8rem;
+  }
+
+  .sale-buttons {
+    justify-content: center;
+  }
+
+  .sale-button {
+    width: 200px;
+    text-align: center;
+  }
+
+  .sale-image {
+    padding: 15px;
   }
 }
 
@@ -229,17 +434,51 @@
   .hero-title {
     font-size: 2rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1.2rem;
   }
-  
+
   .hero-controls {
     bottom: 1rem;
   }
-  
+
   .hero-nav {
     width: 36px;
     height: 36px;
+  }
+
+  .sale-container {
+    padding: 15px;
+  }
+
+  .sale-content {
+    padding: 25px 15px;
+  }
+
+  .sale-title {
+    font-size: 1.7rem;
+  }
+
+  .sale-collection {
+    font-size: 1.2rem;
+  }
+
+  .sale-discount {
+    font-size: 1.5rem;
+  }
+
+  .sale-description {
+    font-size: 1rem;
+  }
+
+  .sale-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sale-image {
+    padding: 10px;
+    height: 250px;
   }
 }

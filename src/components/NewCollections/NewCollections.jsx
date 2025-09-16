@@ -1,5 +1,7 @@
+"use client"
+
 import { useState, useEffect } from "react"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom"
 import "./NewCollections.css"
 import axios from "axios"
 import Carousel from "react-multi-carousel"
@@ -11,7 +13,7 @@ const NewCollections = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
-    const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const responsive = {
     superLargeDesktop: {
@@ -79,13 +81,22 @@ const NewCollections = () => {
   if (error) return <div className="nc-error">{error}</div>
 
   const handleViewProduct = (product) => {
-    navigate(`/product/${product._id}`, { state: { product } });
-  };
-
+    navigate(`/product/${product._id}`, { state: { product } })
+  }
 
   return (
     <section className="nc-container">
-      <h2 className="nc-title" style={{}}>New Collections</h2>
+      <h2 className="nc-title" style={{}}>
+        Featured Collection
+      </h2>
+      <h6 className="ncc-title" style={{}}>
+        Handpicked pieces that embody timeless elegance and contemporary style.
+      </h6>
+      <h6 className="ncc-title" style={{}}>
+        Each garment tells a story of craftsmanship and sophistication.
+      </h6>
+      <br></br>
+
       <div className="nc-gradient-line"></div>
       <div className="nc-carousel-container">
         <Carousel
@@ -103,16 +114,13 @@ const NewCollections = () => {
         >
           {products.map((item, i) => (
             <article className="nc-product-card" key={i}>
-              <div className="nc-product-image-container" style={{ position: 'relative' }}>
+              <div className="nc-product-image-container" style={{ position: "relative" }}>
                 <img
                   src={getImage(item.images, item.availableColors) || "/logo.png"}
                   alt={item.name}
                   className="nc-product-image"
                 />
-                <div 
-                  className="absolute top-3 right-3 z-10" 
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
                   <FavoriteButton productId={item._id} />
                 </div>
               </div>
@@ -123,10 +131,7 @@ const NewCollections = () => {
                   <span className="nc-current-price">₹ {item.price}</span>
                   {item.oldPrice && <span className="nc-original-price">₹ {item.oldPrice}</span>}
                 </div>
-                 <button 
-                  onClick={() => handleViewProduct(item)} 
-                  className="view-product-btn"
-                >
+                <button onClick={() => handleViewProduct(item)} className="view-product-btn">
                   View Product
                 </button>
               </div>
@@ -139,4 +144,3 @@ const NewCollections = () => {
 }
 
 export default NewCollections
-

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useContext, useEffect, useState } from "react"
@@ -172,28 +171,48 @@ const OrderItems = () => {
       }
     }
     return "/logo.png"
-
   }
 
-  
-
-  // Flatten order items for pagination
+  // Flatten order items for pagination and filter out items without products
   const flattenedItems = orderData.flatMap((order) =>
-    order.items.map((item) => ({
-      ...item,
-      orderId: order._id,
-      createdAt: order.createdAt,
-      tentativeDeliveryDate: order.tentativeDeliveryDate,
-    })),
-  )
+    order.items
+      .map((item) => ({
+        ...item,
+        orderId: order._id,
+        createdAt: order.createdAt,
+        tentativeDeliveryDate: order.tentativeDeliveryDate,
+      }))
+      .filter(item => {
+        const product = products.find((p) => p._id === item.productId);
+        return product !== undefined; // Only include items with valid products
+      })
+  );
 
   // Get current items
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = flattenedItems.slice(indexOfFirstItem, indexOfLastItem)
 
+  // Calculate total pages based on items with valid products
+  const totalPages = Math.ceil(flattenedItems.length / itemsPerPage)
+
   // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber)
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+    }
+  }
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
+
+  // Reset to page 1 when orderData changes to avoid empty pages
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [orderData]);
 
   return (
     <div className={`cartitems ${showPopup ? "blur-background" : ""}`}>
@@ -209,70 +228,91 @@ const OrderItems = () => {
       </div>
       <hr />
 
-      
+      {currentItems.length === 0 ? (
+        <div className="no-orders">
+          <p>No orders found</p>
+        </div>
+      ) : (
+        <>
+          {currentItems.map((item, index) => {
+            const {
+              productId,
+              quantity,
+              size,
+              returnRequested,
+              returnApproved,
+              orderId,
+              createdAt,
+              tentativeDeliveryDate,
+            } = item
+            const product = products.find((p) => p._id === productId)
 
-      {currentItems.map((item, index) => {
-        const {
-          productId,
-          quantity,
-          size,
-          returnRequested,
-          returnApproved,
-          orderId,
-          createdAt,
-          tentativeDeliveryDate,
-        } = item
-        const product = products.find((p) => p._id === productId)
+            if (!product) return null
+            let requestStatus = ""
 
-        if (!product) return null
-        let requestStatus = ""
+            if (item.action === "Select" && returnRequested && !returnApproved) {
+              requestStatus = "Return requested"
+            }
+            if (item.action === "accepted" && returnRequested && returnApproved) {
+              requestStatus = "Return Approved"
+            }
+            if (item.action === "rejected" && returnRequested && !returnApproved) {
+              requestStatus = "Return Rejected"
+            }
 
-        if (item.action === "Select" && returnRequested && !returnApproved) {
-          requestStatus = "Return requested"
-        }
-        if (item.action === "accepted" && returnRequested && returnApproved) {
-          requestStatus = "Return Approved"
-        }
-        if (item.action === "rejected" && returnRequested && !returnApproved) {
-          requestStatus = "Return Rejected"
-        }
+            const isEligible = isReturnEligible(createdAt)
 
-        const isEligible = isReturnEligible(createdAt)
+            return (
+              <div key={`${orderId}-${index}`} className="cartitem">
+                <img
+                  src={getImage(product.images) || "/logo.png"}
+                  alt={product.name}
+                />
+                <p>{product.name}</p>
+                <p>Rs {product.price}</p>
+                <p>{quantity}</p>
+                <p>{size}</p>
+                <p>Rs {quantity * product.price}</p>
+                {/* <p>{tentativeDeliveryDate ? moment(tentativeDeliveryDate).format("YYYY-MM-DD") : ""}</p> */}
+                {!returnRequested && (isEligible || !createdAt) && (
+                  <button onClick={() => openPopup(orderId, productId)} disabled={loading}>
+                    {loading ? "Requesting Return..." : "Return"}
+                  </button>
+                )}
+                {!returnRequested && createdAt && !isEligible && <span>Return period expired</span>}
+                {requestStatus && <span>{requestStatus}</span>}
+              </div>
+            )
+          })}
 
+          <hr />
 
-        return (
-          <div key={`${orderId}-${index}`} className="cartitem">
-            <img
-              src={getImage(product.images) || "/logo.png"}
-              alt={product.name}
-            />
-            <p>{product.name}</p>
-            <p>Rs {product.price}</p>
-            <p>{quantity}</p>
-            <p>{size}</p>
-            <p>Rs {quantity * product.price}</p>
-            {/* <p>{tentativeDeliveryDate ? moment(tentativeDeliveryDate).format("YYYY-MM-DD") : ""}</p> */}
-            {!returnRequested && (isEligible || !createdAt) && (
-              <button onClick={() => openPopup(orderId, productId)} disabled={loading}>
-                {loading ? "Requesting Return..." : "Return"}
+          {/* Pagination - Only show if there are multiple pages with content */}
+          {totalPages > 1 && (
+            <div className="pagination">
+              <button 
+                onClick={prevPage} 
+                disabled={currentPage === 1}
+                className="pagination-btn"
+              >
+                Previous
               </button>
-            )}
-            {!returnRequested && createdAt && !isEligible && <span>Return period expired</span>}
-            {requestStatus && <span>{requestStatus}</span>}
-          </div>
-        )
-      })}
-
-      <hr />
-
-      {/* Pagination */}
-      <div className="pagination">
-        {Array.from({ length: Math.ceil(flattenedItems.length / itemsPerPage) }, (_, i) => (
-          <button key={i + 1} onClick={() => paginate(i + 1)} className={currentPage === i + 1 ? "active" : ""}>
-            {i + 1}
-          </button>
-        ))}
-      </div>
+              
+              <span className="page-info">
+                Page {currentPage} of {totalPages}
+              </span>
+              
+              <button 
+                onClick={nextPage} 
+                disabled={currentPage === totalPages}
+                className="pagination-btn"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      )}
 
       {/* Return Reason Popup */}
       {showPopup && (

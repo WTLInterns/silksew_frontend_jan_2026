@@ -14,9 +14,9 @@ const ShopContextProvider = (props) => {
   const [cartItems, setCartItems] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [products, setProducts] = useState([])
-
-
   const [token, setToken] = useState("")
+  const [loading, setLoading] = useState(true) // products + token साठी
+  const [cartLoading, setCartLoading] = useState(true) // ✅ cart fetch साठी
 
   const validateToken = useCallback(() => {
     const savedToken = localStorage.getItem("token")
@@ -29,14 +29,20 @@ const ShopContextProvider = (props) => {
         } else {
           console.error("Token has expired.")
           localStorage.removeItem("token")
-          setCartItems([]) // Clear cart items when token expires
+          setToken("")
+          setCartItems([])
         }
       } catch (error) {
         console.error("Failed to decode token:", error)
         localStorage.removeItem("token")
-        setCartItems([]) // Clear cart items when token is invalid
+        setToken("")
+        setCartItems([])
       }
+    } else {
+      setToken("")
+      setCartItems([])
     }
+    setLoading(false)
   }, [])
 
   useEffect(() => {
@@ -47,8 +53,7 @@ const ShopContextProvider = (props) => {
     try {
       const response = await axios.get(BASEURL + "/api/products")
       if (response.status === 200) {
-        console.log("-----------", response)
-        setProducts(response.data.products)
+        setProducts(response.data.products || [])
         localStorage.setItem("products", JSON.stringify(response.data.products))
       } else {
         console.error("Failed to fetch products. Status:", response.status)
@@ -59,27 +64,24 @@ const ShopContextProvider = (props) => {
   }, [])
 
   const getTotalCartItems = useCallback(async () => {
+    setCartLoading(true)
     if (token) {
       try {
         const response = await axios.get(BASEURL + "/api/cart/", {
           headers: { Authorization: `Bearer ${token}` },
         })
-        console.log("mansi",response?.data?.items[6])
-        const serverCartItems = response.data.items || []
+        const serverCartItems = Array.isArray(response.data.items) ? response.data.items : []
         setCartItems(serverCartItems)
       } catch (error) {
         console.error("Failed to fetch cart items:", error.message)
-        if (error.response) {
-          console.error("API Error:", error.response.data)
-        }
+        setCartItems([])
       }
     } else {
-      console.error("No token provided.")
-      setCartItems([]) // Clear cart items when there's no token
+      setCartItems([])
     }
+    setCartLoading(false)
   }, [token])
 
-  // add to cart button
   const addToCart = useCallback(
     async (productId, size, color) => {
       const newItem = { productId, size, color, quantity: 1 }
@@ -99,11 +101,9 @@ const ShopContextProvider = (props) => {
 
       if (token) {
         try {
-          const res = await axios.post(BASEURL + "/api/cart/add", newItem, {
+          await axios.post(BASEURL + "/api/cart/add", newItem, {
             headers: { Authorization: `Bearer ${token}` },
           })
-          console.log("when add to cart item", res?.data?.cart?.items);
-          console.log("when add to cart item1", res?.data?.cart?.items[6]);
         } catch (error) {
           console.error("Failed to add item to cart on server:", error.message)
         }
@@ -132,14 +132,11 @@ const ShopContextProvider = (props) => {
 
       if (token) {
         try {
-          const res = await axios.post(
+          await axios.post(
             BASEURL + "/api/cart/remove",
             { productId, size, color },
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
+            { headers: { Authorization: `Bearer ${token}` } },
           )
-          console.log("remove item", res)
         } catch (error) {
           console.error("Failed to remove item from cart on server:", error.message)
         }
@@ -150,11 +147,7 @@ const ShopContextProvider = (props) => {
 
   const getTotalCartAmount = useCallback(() => {
     return cartItems.reduce((total, cartItem) => {
-      // console.log("cartItem",cartItems[6].productId)
-      // console.log("products",products)
-      const product = products.find(p => p._id === cartItem?.productId)
-      
-            // console.log("display details after add to cart item", cartItem.productId)
+      const product = products.find((p) => p._id === cartItem?.productId)
       if (product) {
         total += product.price * cartItem.quantity
       }
@@ -167,18 +160,14 @@ const ShopContextProvider = (props) => {
   }, [cartItems])
 
   useEffect(() => {
-    if (token) {
-      getTotalCartItems()
-    } else {
-      setCartItems([]) // Clear cart items when there's no token
-    }
-  }, [token, getTotalCartItems])
-
-  useEffect(() => {
     if (products.length === 0) {
       getProducts()
     }
   }, [getProducts, products.length])
+
+  useEffect(() => {
+    getTotalCartItems()
+  }, [token, getTotalCartItems])
 
   const clearCart = useCallback(() => {
     setCartItems([])
@@ -198,11 +187,13 @@ const ShopContextProvider = (props) => {
     delivery_fee,
     setCartItems,
     getTotalCartItems,
-    clearCart, // Add this new function to the context
+    clearCart,
+    token,
+    loading,
+    cartLoading,
   }
 
   return <ShopContext.Provider value={contextValue}>{props.children}</ShopContext.Provider>
 }
 
 export default ShopContextProvider
-

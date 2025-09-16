@@ -53,7 +53,7 @@ const PrivacyPolicy = () => {
 
       <h2 style={styles.heading2}>1. Introduction</h2>
       <p style={styles.paragraph}>
-        Welcome to Silksew! Your privacy is important to us. This Privacy Policy outlines how we collect, 
+        Welcome to Silksew! Your privacy is important to us. This Privacy Policy outlines how we collect,
         use, and protect your personal information when you visit our website,{" "}
         <a href="https://www.silksew.com" style={styles.link}>www.silksew.com</a>.
       </p>
@@ -104,8 +104,10 @@ const PrivacyPolicy = () => {
       <h2 style={styles.heading2}>9. Contact Us</h2>
       <p style={styles.paragraph}>For questions regarding this policy, contact us:</p>
       <ul style={styles.list}>
-        <li style={styles.listItem}><strong>Email:</strong> <a href="mailto:Info@Silksew.com" style={styles.link}>Info@Silksew.com</a></li>
-        <li style={styles.listItem}><strong>Phone:</strong> +91 91457300054</li>
+        <li style={styles.listItem}><strong>Email:</strong> <a href="mailto:
+info@webutsav.com" style={styles.link}>
+          info@webutsav.com</a></li>
+        <li style={styles.listItem}><strong>Phone:</strong> +91 9325578091</li>
       </ul>
     </div>
   );
