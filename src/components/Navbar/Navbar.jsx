@@ -209,7 +209,7 @@ const Navbar = () => {
     try {
       if (subcategory === "All Products" || subcategory === "New Arrivals") {
         // ✅ Fetch all products (or New Arrivals if backend supports filtering)
-        const response = await fetch("http://localhost:5001/api/products")
+        const response = await fetch("https://api.silksew.com/api/products")
         if (response.ok) {
           const data = await response.json()
           if (data.success) {
@@ -225,7 +225,7 @@ const Navbar = () => {
       } else {
         // Fetch by subcategory
         const response = await fetch(
-          `http://localhost:5001/api/products/by-subcategory?subcategory=${encodeURIComponent(subcategory)}`
+          `https://api.silksew.com/api/products/by-subcategory?subcategory=${encodeURIComponent(subcategory)}`
         )
         if (response.ok) {
           const data = await response.json()
