@@ -100,7 +100,7 @@ const Dashboard = () => {
         // Fetch products
         let productsData = []
         try {
-          const productsResponse = await axios.get("http://localhost:5001/api/products", {
+          const productsResponse = await axios.get("https://api.silksew.com/api/products", {
             headers: { Authorization: `Bearer ${token}` },
             timeout: 10000, // 10 seconds timeout
           })
@@ -117,7 +117,7 @@ const Dashboard = () => {
         // Fetch orders
         let ordersData = []
         try {
-          const ordersResponse = await axios.get("http://localhost:5001/api/orders", {
+          const ordersResponse = await axios.get("https://api.silksew.com/api/orders", {
             headers: { Authorization: `Bearer ${token}` },
             timeout: 10000, // 10 seconds timeout
           })

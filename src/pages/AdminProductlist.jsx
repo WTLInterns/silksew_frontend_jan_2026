@@ -234,7 +234,7 @@
 
 //   const fetchProducts = useCallback(async () => {
 //     try {
-//       const response = await axios.get("http://localhost:5001/api/products", {
+//       const response = await axios.get("https://api.silksew.com/api/products", {
 //         headers: { Authorization: `Bearer ${token}` },
 //       })
 //       const data = Array.isArray(response.data) ? response.data : response.data.products || []
@@ -260,7 +260,7 @@
 
 //   const handleDeleteProduct = async (id) => {
 //     try {
-//       const response = await axios.delete(`http://localhost:5001/api/products/${id}`, {
+//       const response = await axios.delete(`https://api.silksew.com/api/products/${id}`, {
 //         headers: { Authorization: `Bearer ${token}` },
 //       })
 
@@ -542,14 +542,14 @@
 
 //       let response
 //       if (isAdding) {
-//         response = await axios.post("http://localhost:5001/api/products", productData, {
+//         response = await axios.post("https://api.silksew.com/api/products", productData, {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //             "Content-Type": "multipart/form-data",
 //           },
 //         })
 //       } else {
-//         response = await axios.put(`http://localhost:5001/api/products/${editingProduct._id}`, productData, {
+//         response = await axios.put(`https://api.silksew.com/api/products/${editingProduct._id}`, productData, {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //             "Content-Type": "multipart/form-data",
@@ -1182,7 +1182,7 @@
 
 //   const fetchProducts = useCallback(async () => {
 //     try {
-//       const response = await axios.get("http://localhost:5001/api/products", {
+//       const response = await axios.get("https://api.silksew.com/api/products", {
 //         headers: { Authorization: `Bearer ${token}` },
 //       })
 //       console.log(response.data)
@@ -1209,7 +1209,7 @@
 
 //   const handleDeleteProduct = useCallback(async (id) => {
 //     try {
-//       await axios.delete(`http://localhost:5001/api/products/${id}`, {
+//       await axios.delete(`https://api.silksew.com/api/products/${id}`, {
 //         headers: { Authorization: `Bearer ${token}` },
 //       })
 //       toast.success("Product deleted successfully!")
@@ -1475,13 +1475,13 @@
 //       productData.append("images", JSON.stringify(uploadedImagesByColor))
 
 //       const response = isAdding
-//         ? await axios.post("http://localhost:5001/api/products", productData, {
+//         ? await axios.post("https://api.silksew.com/api/products", productData, {
 //             headers: {
 //               Authorization: `Bearer ${token}`,
 //               "Content-Type": "multipart/form-data",
 //             },
 //           })
-//         : await axios.put(`http://localhost:5001/api/products/${editingProduct._id}`, productData, {
+//         : await axios.put(`https://api.silksew.com/api/products/${editingProduct._id}`, productData, {
 //             headers: {
 //               Authorization: `Bearer ${token}`,
 //               "Content-Type": "multipart/form-data",
@@ -2122,7 +2122,7 @@
 
 //   const fetchProducts = useCallback(async () => {
 //     try {
-//       const response = await axios.get("http://localhost:5001/api/products", {
+//       const response = await axios.get("https://api.silksew.com/api/products", {
 //         headers: { Authorization: `Bearer ${token}` },
 //       })
 //       const data = Array.isArray(response.data) ? response.data : response.data.products || []
@@ -2148,7 +2148,7 @@
 
 //   const handleDeleteProduct = useCallback(async (id) => {
 //     try {
-//       await axios.delete(`http://localhost:5001/api/products/${id}`, {
+//       await axios.delete(`https://api.silksew.com/api/products/${id}`, {
 //         headers: { Authorization: `Bearer ${token}` },
 //       })
 //       toast.success("Product deleted successfully!")
@@ -2524,13 +2524,13 @@
 //       productData.append("images", JSON.stringify(uploadedImagesByColor))
 
 //       const response = isAdding
-//         ? await axios.post("http://localhost:5001/api/products", productData, {
+//         ? await axios.post("https://api.silksew.com/api/products", productData, {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //             "Content-Type": "multipart/form-data",
 //           },
 //         })
-//         : await axios.put(`http://localhost:5001/api/products/${editingProduct._id}`, productData, {
+//         : await axios.put(`https://api.silksew.com/api/products/${editingProduct._id}`, productData, {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //             "Content-Type": "multipart/form-data",
@@ -3189,7 +3189,7 @@
 
 //   const fetchProducts = useCallback(async () => {
 //     try {
-//       const response = await axios.get("http://localhost:5001/api/products", {
+//       const response = await axios.get("https://api.silksew.com/api/products", {
 //         headers: { Authorization: `Bearer ${token}` },
 //       })
 //       const data = Array.isArray(response.data) ? response.data : response.data.products || []
@@ -3215,7 +3215,7 @@
 
 //   const handleDeleteProduct = useCallback(async (id) => {
 //     try {
-//       await axios.delete(`http://localhost:5001/api/products/${id}`, {
+//       await axios.delete(`https://api.silksew.com/api/products/${id}`, {
 //         headers: { Authorization: `Bearer ${token}` },
 //       })
 //       toast.success("Product deleted successfully!")
@@ -3497,13 +3497,13 @@
 //       productData.append("images", JSON.stringify(uploadedImagesByColor))
 
 //       const response = isAdding
-//         ? await axios.post("http://localhost:5001/api/products", productData, {
+//         ? await axios.post("https://api.silksew.com/api/products", productData, {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //             "Content-Type": "multipart/form-data",
 //           },
 //         })
-//         : await axios.put(`http://localhost:5001/api/products/${editingProduct._id}`, productData, {
+//         : await axios.put(`https://api.silksew.com/api/products/${editingProduct._id}`, productData, {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //             "Content-Type": "multipart/form-data",
@@ -4161,7 +4161,7 @@
 
 //   const fetchProducts = useCallback(async () => {
 //     try {
-//       const response = await axios.get("http://localhost:5001/api/products", {
+//       const response = await axios.get("https://api.silksew.com/api/products", {
 //         headers: { Authorization: `Bearer ${token}` },
 //       })
 //       const data = Array.isArray(response.data) ? response.data : response.data.products || []
@@ -4188,7 +4188,7 @@
 //   const handleDeleteProduct = useCallback(
 //     async (id) => {
 //       try {
-//         await axios.delete(`http://localhost:5001/api/products/${id}`, {
+//         await axios.delete(`https://api.silksew.com/api/products/${id}`, {
 //           headers: { Authorization: `Bearer ${token}` },
 //         })
 //         toast.success("Product deleted successfully!")
@@ -4482,13 +4482,13 @@
 //         productData.append("images", JSON.stringify(uploadedImagesByColor))
 
 //         const response = isAdding
-//           ? await axios.post("http://localhost:5001/api/products", productData, {
+//           ? await axios.post("https://api.silksew.com/api/products", productData, {
 //               headers: {
 //                 Authorization: `Bearer ${token}`,
 //                 "Content-Type": "multipart/form-data",
 //               },
 //             })
-//           : await axios.put(`http://localhost:5001/api/products/${editingProduct._id}`, productData, {
+//           : await axios.put(`https://api.silksew.com/api/products/${editingProduct._id}`, productData, {
 //               headers: {
 //                 Authorization: `Bearer ${token}`,
 //                 "Content-Type": "multipart/form-data",
@@ -5181,7 +5181,7 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const response = await axios.get("http://localhost:5001/api/products", {
+      const response = await axios.get("https://api.silksew.com/api/products", {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = Array.isArray(response.data) ? response.data : response.data.products || []
@@ -5208,7 +5208,7 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
   const handleDeleteProduct = useCallback(
     async (id) => {
       try {
-        await axios.delete(`http://localhost:5001/api/products/${id}`, {
+        await axios.delete(`https://api.silksew.com/api/products/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         toast.success("Product deleted successfully!")
@@ -5505,13 +5505,13 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
         productData.append("images", JSON.stringify(uploadedImagesByColor))
 
         const response = isAdding
-          ? await axios.post("http://localhost:5001/api/products", productData, {
+          ? await axios.post("https://api.silksew.com/api/products", productData, {
               headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "multipart/form-data",
               },
             })
-          : await axios.put(`http://localhost:5001/api/products/${editingProduct._id}`, productData, {
+          : await axios.put(`https://api.silksew.com/api/products/${editingProduct._id}`, productData, {
               headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "multipart/form-data",

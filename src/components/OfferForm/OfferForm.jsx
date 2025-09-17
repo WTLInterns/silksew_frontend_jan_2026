@@ -24,7 +24,7 @@
 //     e.preventDefault();
 //     setSubmissionError(false);
 //     try {
-//       await axios.post("http://localhost:5001/api/offer/create-offer", formData);
+//       await axios.post("https://api.silksew.com/api/offer/create-offer", formData);
 //       toast.success("Offer Created Successfully!");
 //       setFormData({
 //         code: "",
@@ -350,7 +350,7 @@ const OfferForm = () => {
     e.preventDefault();
     setSubmissionError(false);
     try {
-      await axios.post("http://localhost:5001/api/offer/create-offer", formData);
+      await axios.post("https://api.silksew.com/api/offer/create-offer", formData);
       toast.success("Offer Created Successfully!");
       setFormData({
         code: "",
