@@ -3,15 +3,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 40px; /* Adjusted padding for a cleaner layout */
-    background-color: #333;
+    padding: 15px 45px; /* Adjusted padding for a cleaner layout */
+    /* background-color: #333; */
     color: white;
     position: fixed;
+    width: 100%;
   }
   
   .nav-logo {
     display: flex;
     align-items: center;
+    margin-top: 2px;
   }
   
   .nav-logo img {

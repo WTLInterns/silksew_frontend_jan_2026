@@ -43,9 +43,9 @@ export default function SaleTimer() {
   useEffect(() => {
     const fetchOffer = async () => {
       try {
-        const res = await axios.get("https://api.silksew.com/api/offer/get-offer");
-        setOffer(res.data.offer);
-        console.log("Offer response:", res.data.offer);
+        const res = await axios.get("http://localhost:5001/api/offer/get-offer");
+        setOffer(res.data.formatOfferDates);
+        console.log("Offer response:", res.data.offers);
       } catch (err) {
         console.error("Error fetching offer:", err);
       }
@@ -92,14 +92,14 @@ export default function SaleTimer() {
               <span className="number">{totalDays} days {offer?.value}% OFF </span>
               {/* <span className="label">days</span> */}
             </div>
-            <div className="code-section">
+            {/* <div className="code-section">
               <span className="number">{offer?.code}</span>
               <span className="label">CODE</span>
 
             
 
-            </div>
- 
+            </div> */}
+
           </div>
         </div>
         <div className="marquee-section">

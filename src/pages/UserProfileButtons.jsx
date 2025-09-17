@@ -13,6 +13,7 @@ import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import OrderItems from "../components/OrderItems/OrderItems"
 import CartItems from "../components/CartItems/CartItems"
+import Navbar from "../components/Navbar/Navbar"
 
 const UserProfileButtons = () => {
   const { token } = useContext(ShopContext)
@@ -48,7 +49,7 @@ const UserProfileButtons = () => {
         toast.error("No authentication token found. Please log in.")
         return
       }
-      const response = await axios.get("https://api.silksew.com/api/userProfileDetail/user-profile", {
+      const response = await axios.get("http://localhost:5001/api/userProfileDetail/user-profile", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -71,7 +72,7 @@ const UserProfileButtons = () => {
         return
       }
       setLoadingProducts(true)
-      const response = await axios.get("https://api.silksew.com/api/orders", {
+      const response = await axios.get("http://localhost:5001/api/orders", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -106,24 +107,24 @@ const UserProfileButtons = () => {
 
   const updateProfile = async (e) => {
     e.preventDefault();
-    
+
     const token = localStorage.getItem("token");
-  
+
     if (!token) {
       console.log("No token found. Please log in.");
       return;
     }
-  
+
     try {
       const response = await axios.put(
-        "https://api.silksew.com/api/updateUserProfileDetail/update-user-profile",
+        "http://localhost:5001/api/updateUserProfileDetail/update-user-profile",
         userData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       toast.success("Profile Successfully Updated.");
       setIsEditing(false);
-      
+
     } catch (error) {
       console.error("Update failed:", error);
       toast.error("Update failed. Please try again.");
@@ -163,21 +164,22 @@ const UserProfileButtons = () => {
     <section className="profile-container">
       <div className="profile-info-card">
         <div className="profile-header">
-          <h3 className="user-name-bold">{userData?.name || "John Doe"}</h3>
+          {/* <h3 className="user-name-bold">{userData?.name || "John Doe"}</h3> */}
+          <h3 className="user-name-bold">Profile Details</h3>
         </div>
-        
+
         <div className="profile-details-grid">
           <div className="detail-row">
             <span className="detail-label">Email</span>
             <span className="detail-value email-value">{userData?.email || "john.doe@example.com"}</span>
           </div>
-          
+
           <div className="detail-row">
             <span className="detail-label">Phone:</span>
             <span className="detail-value">{userData?.phone || "+1 (556) 123-4567"}</span>
           </div>
         </div>
-        
+
         <button className="edit-profile-btn" onClick={() => setIsEditing(true)}>
           Edit Profile
         </button>
@@ -211,7 +213,7 @@ const UserProfileButtons = () => {
             <label htmlFor="phone" className="form-label">
               Phone
             </label>
-            <input
+            {/* <input
               type="tel"
               className="form-input"
               id="phone"
@@ -219,7 +221,28 @@ const UserProfileButtons = () => {
               value={userData?.phone || ""}
               onChange={handleChange}
               placeholder="Enter your phone number"
+            /> */}
+            <input
+              type="tel"
+              className="form-input"
+              id="phone"
+              name="phone"
+              value={userData?.phone || ""}
+              onChange={(e) => {
+                // Allow only numbers
+                const numericValue = e.target.value.replace(/\D/g, "")
+
+                // Restrict to max 10 digits
+                if (numericValue.length <= 10) {
+                  handleChange({
+                    target: { name: "phone", value: numericValue },
+                  })
+                }
+              }}
+              placeholder="Enter your phone number"
+              maxLength={10} // extra safety
             />
+
           </div>
 
           <div className="form-group">
@@ -259,42 +282,45 @@ const UserProfileButtons = () => {
   );
 
   return (
-    <div className="user-profile-container">
-      <button className="mobile-menu-toggle" onClick={toggleSidebar}>
-        <span className="toggle-icon">☰</span>
-        <span className="toggle-text">Menu</span>
-      </button>
-      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-        <div className="sidebar-header">
-          <div className="profile-sidebar">
-            <img src={profile_icon} className="sidebar-profile-icon" alt="Profile" />
-            <div className="sidebar-profile-info">
-              <div className="sidebar-name">{userData?.name || "John Doe"}</div>
+    <>
+      <Navbar />
+      <div className="user-profile-container">
+        <button className="mobile-menu-toggle" onClick={toggleSidebar}>
+          <span className="toggle-icon">☰</span>
+          <span className="toggle-text">Menu</span>
+        </button>
+        <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+          <div className="sidebar-header">
+            <div className="profile-sidebar">
+              {/* <img src={profile_icon} className="sidebar-profile-icon" alt="Profile" /> */}
+              <div className="sidebar-profile-info">
+                <div className="sidebar-name">{userData?.name || "John Doe"}</div>
+              </div>
             </div>
           </div>
+          <div className="sidebar-title-section">
+            <h2 className="sidebar-title" style={{ fontWeight: "bold", fontSize: "20px", marginLeft: "20px" }}>My Account</h2>
+          </div>
+          <ul className="sidebar-menu">
+            {menuItems.map((item) => (
+              <li key={item.id} className="sidebar-menu-item">
+                <button
+                  className={`sidebar-menu-button ${activeTab === item.id ? "active" : ""}`}
+                  onClick={() => handleTabClick(item.id)}
+                >
+                  <span className="sidebar-menu-text">{item.title}</span>
+                  {activeTab === item.id && <span className="active-indicator"></span>}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
-        <div className="sidebar-title-section">
-          <h2 className="sidebar-title">My Account</h2>
-        </div>
-        <ul className="sidebar-menu">
-          {menuItems.map((item) => (
-            <li key={item.id} className="sidebar-menu-item">
-              <button
-                className={`sidebar-menu-button ${activeTab === item.id ? "active" : ""}`}
-                onClick={() => handleTabClick(item.id)}
-              >
-                <span className="sidebar-menu-text">{item.title}</span>
-                {activeTab === item.id && <span className="active-indicator"></span>}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <main className="main-content">
+          {renderContent()}
+        </main>
+        <ToastContainer style={{ marginTop: "10px" }} />
       </div>
-      <main className="main-content">
-        {renderContent()}
-      </main>
-      <ToastContainer style={{marginTop: "10px"}} />
-    </div>
+    </>
   )
 }
 

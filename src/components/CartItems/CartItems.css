@@ -1,6 +1,6 @@
 :root {
-    --primary-color: #ff5a5a;
-    --primary-hover: #e04a4a;
+    --primary-color: black;
+    --primary-hover: black;
     --text-color: #333;
     --light-gray: #e2e2e2;
     --background-light: #f9f9f9;
@@ -119,7 +119,7 @@
 
 .cartitem button {
   padding: 0.5rem 0.75rem;
-  background: #4d0000;
+  background: black;
   border: none;
   color: white;
   font-size: 0.875rem;

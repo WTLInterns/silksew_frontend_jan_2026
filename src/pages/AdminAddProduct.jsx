@@ -362,7 +362,7 @@
 
 //       // Send to backend
 //       const response = await axios.post(
-//         "https://api.silksew.com/api/products",
+//         "http://localhost:5001/api/products",
 //         productData,
 //         {
 //           headers: {
@@ -973,7 +973,7 @@ const AdminProductForm = () => {
 
       // Send to backend
       const response = await axios.post(
-        "https://api.silksew.com/api/products",
+        "http://localhost:5001/api/products",
         productData,
         {
           headers: {

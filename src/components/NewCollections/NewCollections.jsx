@@ -43,7 +43,7 @@ const NewCollections = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("https://api.silksew.com/api/products/list")
+        const response = await axios.get("http://localhost:5001/api/products/list")
         const fetchedProducts = Array.isArray(response.data) ? response.data : response.data.products
         setProducts(fetchedProducts)
       } catch (err) {
@@ -98,7 +98,7 @@ const NewCollections = () => {
       <br></br>
 
       <div className="nc-gradient-line"></div>
-      <div className="nc-carousel-container">
+      <div className="nc-carousel-container" >
         <Carousel
           responsive={responsive}
           infinite={true}
@@ -113,7 +113,7 @@ const NewCollections = () => {
           itemClass="nc-carousel-item"
         >
           {products.map((item, i) => (
-            <article className="nc-product-card" key={i}>
+            <article className="nc-product-card" key={i} onClick={() => handleViewProduct(item)}  >
               <div className="nc-product-image-container" style={{ position: "relative" }}>
                 <img
                   src={getImage(item.images, item.availableColors) || "/logo.png"}

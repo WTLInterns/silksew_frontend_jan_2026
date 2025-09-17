@@ -14,7 +14,7 @@
 //   // useEffect(() => {
 //   //   const fetchProducts = async () => {
 //   //     try {
-//   //       const response = await axios.get('https://api.silksew.com/api/products/list');
+//   //       const response = await axios.get('http://localhost:5001/api/products/list');
 //   //       const fetchedProducts = Array.isArray(response.data) ? response.data : response.data.products;
 //   //       const womenProducts = fetchedProducts.filter((product) => product.category.includes('women'));
 //   //       setProducts(womenProducts);
@@ -31,7 +31,7 @@
 //   useEffect(() => {
 //     const fetchProducts = async () => {
 //       try {
-//         const response = await axios.get("https://api.silksew.com/api/products/list");
+//         const response = await axios.get("http://localhost:5001/api/products/list");
 //         const fetchedProducts = Array.isArray(response.data)
 //           ? response.data
 //           : response.data.products;
@@ -191,7 +191,7 @@ const Popular = () => {
     const fetchProducts = async () => {
       try {
         // ✅ Fetch only latest 4 products directly from backend
-        const response = await axios.get("https://api.silksew.com/api/products/list?limit=4");
+        const response = await axios.get("http://localhost:5001/api/products/list?limit=4");
         const fetchedProducts = Array.isArray(response.data)
           ? response.data
           : response.data.products;
@@ -260,11 +260,11 @@ const Popular = () => {
       key={product._id}
       className="product-card"
       onClick={(e) => {
-        e.stopPropagation();
+        // e.stopPropagation();
         handleViewProduct(product);
       }}
     >
-      <div className="product-image-container" style={{ position: 'relative' }}>
+      <div className="product-image-container" style={{ position: 'relative' }} >
         <img
           src={getImage(product.images, product.availableColors) || '/logo.png'}
           alt={product.name}

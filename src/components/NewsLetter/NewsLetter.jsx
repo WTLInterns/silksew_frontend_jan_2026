@@ -1,5 +1,6 @@
 "use client"
 
+import { color } from "framer-motion"
 import React, { useState } from "react"
 
 // Custom Button Component
@@ -50,9 +51,9 @@ const Input = ({ type, placeholder, value, onChange, ...props }) => {
       value={value}
       onChange={onChange}
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: "#f8fafc", // Changed to a light gray background
         color: "#1f2937",
-        border: "none",
+        border: "1px solid #d1d5db", // Added 1px border as requested
         borderRadius: "6px",
         padding: "12px 16px",
         fontSize: "16px",
@@ -70,7 +71,7 @@ const Card = ({ children, style }) => {
   return (
     <div
       style={{
-        backgroundColor: "#ef4444", // red-500 (lighter red card)
+        backgroundColor: "#fdf2f8", // Changed to a light pink background instead of red
         border: "1px solid rgba(255,255,255,0.2)",
         borderRadius: "8px",
         maxWidth: "896px",
@@ -111,14 +112,15 @@ export function Newsletter() {
 
   const sectionStyles = {
     padding: "80px 0",
-    backgroundColor: "#dc2626", // red-600 (dark red background)
-    color: "#ffffff",
+    backgroundColor: "#fce7f3", // Changed to a light pink background instead of dark red
+    color: "black",
   }
 
   const containerStyles = {
     maxWidth: "1200px",
     margin: "0 auto",
     padding: "0 16px",
+    color: "black",
   }
 
   const titleStyles = {
@@ -127,12 +129,13 @@ export function Newsletter() {
     marginBottom: "16px",
     fontFamily: "serif",
     lineHeight: "1.2",
+    color: "black",
   }
 
   const subtitleStyles = {
     fontSize: "18px",
     marginBottom: "32px",
-    color: "#ffffff",
+    color: "black",
     maxWidth: "512px",
     margin: "0 auto 32px auto",
     lineHeight: "1.6",
@@ -144,11 +147,12 @@ export function Newsletter() {
     gap: "16px",
     maxWidth: "384px",
     margin: "0 auto",
+    color: "black"
   }
 
   const disclaimerStyles = {
     fontSize: "14px",
-    color: "rgba(255, 255, 255, 0.85)",
+    color: "black",
     marginTop: "16px",
   }
 

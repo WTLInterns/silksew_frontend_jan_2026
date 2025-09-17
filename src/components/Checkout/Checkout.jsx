@@ -130,7 +130,7 @@ const Checkout = () => {
           contact: formData.phone,
         },
         theme: { color: "#3399cc" },
-        modal: { ondismiss: function () {} }
+        modal: { ondismiss: function () { } }
       };
 
       const rzp = new window.Razorpay(options);
@@ -206,6 +206,7 @@ const Checkout = () => {
     }
 
     if (!validateForm()) {
+      toast.error("Please fill all details.")  
       setIsLoading(false)
       return
     }
@@ -215,6 +216,12 @@ const Checkout = () => {
       setIsLoading(false)
       return
     }
+
+     if (method !== "Cash on Delivery") {
+    toast.error("Please select Cash on Delivery to place order.")
+    setIsLoading(false)
+    return
+  }
 
     setShowSuccessPopup(true)
 
@@ -341,7 +348,7 @@ const Checkout = () => {
           onChange={onChangeHandler}
           required
         />
-        <input
+        {/* <input
           type="tel"
           name="phone"
           value={formData.phone}
@@ -349,7 +356,23 @@ const Checkout = () => {
           placeholder="Phone Number"
           onChange={onChangeHandler}
           required
+        /> */}
+        <input
+          type="tel"
+          name="phone"
+          value={formData.phone}
+          className="form-input"
+          placeholder="Phone Number"
+          onChange={(e) => {
+            const value = e.target.value;
+            // Only allow numbers and max 10 digits
+            if (/^\d{0,10}$/.test(value)) {
+              onChangeHandler(e);
+            }
+          }}
+          required
         />
+
         <input
           type="text"
           name="street"
@@ -388,7 +411,7 @@ const Checkout = () => {
           />
         </div>
         <div className="form-row">
-          <input
+          {/* <input
             type="text"
             name="zipcode"
             value={formData.zipcode}
@@ -396,7 +419,23 @@ const Checkout = () => {
             placeholder="Zipcode"
             onChange={onChangeHandler}
             required
+          /> */}
+          <input
+            type="text"
+            name="zipcode"
+            value={formData.zipcode}
+            className="form-input"
+            placeholder="Zipcode"
+            onChange={(e) => {
+              const value = e.target.value;
+              // Allow only digits and restrict to 6 characters
+              if (/^\d{0,6}$/.test(value)) {
+                onChangeHandler(e);
+              }
+            }}
+            required
           />
+
           <input
             type="text"
             name="country"
@@ -431,7 +470,7 @@ const Checkout = () => {
           className="submit-button"
           disabled={isLoading}
           onClick={method === "Razorpay" ? handleRazorpayClick : undefined}
-          style={{backgroundColor:"black"}}
+          style={{ backgroundColor: "black" }}
         >
           {isLoading ? "Processing..." : "PLACE ORDER"}
         </button>

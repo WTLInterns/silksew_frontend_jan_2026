@@ -79,6 +79,7 @@
   transition: transform 0.3s ease;
   position: relative;
   height: 100%;
+  cursor:pointer;
 }
 
 .nc-product-card:hover {
@@ -177,7 +178,7 @@
 }
 
 .nc-original-price {
-  color: #999;
+  color: red;
   text-decoration: line-through;
   font-size: 14px;
 }

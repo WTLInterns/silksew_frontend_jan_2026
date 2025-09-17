@@ -34,9 +34,9 @@ const AdminNavbar = () => {
   }, []);
 
   return (
-    <div className="navbar">
+    <div className="navbar style">
       <div className="nav-logo">
-        <img src={logo} alt="Logo" />
+        <img src={logo} alt="Logo" style={{marginTop:"-10px"}} />
         <p>SILKSEW</p>
       </div>
     </div>

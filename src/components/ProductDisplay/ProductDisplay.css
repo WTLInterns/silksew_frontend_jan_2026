@@ -185,13 +185,14 @@
 }
 
 .size-box.selected {
-  background-color:orange;
+  background-color:black;
   color: white;
   border-color: hsl(210, 90%, 40%);
 }
 
 .size-box:hover:not(.selected) {
-  background-color: red;
+  background-color: black;
+  color:white
 }
 
 .add-to-cart-btn {
@@ -210,9 +211,10 @@
 }
 
 .add-to-cart-btn:hover {
-  background: #b11212; 
+  background: black; 
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color:white
 }
 
 .add-to-cart-btn:active {

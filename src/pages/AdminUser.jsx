@@ -142,7 +142,7 @@ const AdminUser = ({ updateTotalOrders }) => {
           placeholder="Search by Name"
           value={searchTerm}
           onChange={handleSearchChange}
-          className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full md:w-1/3 px-4 py-2 mx-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
