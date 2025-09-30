@@ -40,6 +40,60 @@ const NewCollections = () => {
 
   const shortenName = (name) => (name.length > 25 ? name.substring(0, 25) + "..." : name)
 
+  // Check if product has discount-only offer (no timeline)
+  const hasDiscountOnly = (product) => {
+    return product.discountPercent && product.discountPercent > 0 && !product.offerEndDate
+  }
+
+  // Check if product has active time-based offer
+  const isWithinOfferWindow = (start, end) => {
+    if (!end) return false
+    const now = new Date()
+    const startDate = start ? new Date(start) : null
+    const endDate = new Date(end)
+    return (startDate ? now >= startDate : true) && now < endDate
+  }
+
+  // Calculate discounted price
+  const calculateDiscountedPrice = (originalPrice, discountPercent) => {
+    if (!discountPercent || discountPercent <= 0) return originalPrice
+    return Math.round(originalPrice - (originalPrice * discountPercent / 100))
+  }
+
+  // Get display prices for product
+  const getDisplayPrices = (product) => {
+    const discountOnly = hasDiscountOnly(product)
+    const timeBasedOffer = isWithinOfferWindow(product.offerStartDate, product.offerEndDate)
+    
+    if (discountOnly) {
+      const originalPrice = product.oldPrice || product.price
+      const discountedPrice = calculateDiscountedPrice(originalPrice, product.discountPercent)
+      return {
+        currentPrice: discountedPrice,
+        oldPrice: originalPrice,
+        hasDiscount: true,
+        discountPercent: product.discountPercent,
+        isSpecialOffer: true
+      }
+    } else if (timeBasedOffer && product.oldPrice && product.oldPrice > product.price) {
+      return {
+        currentPrice: product.price,
+        oldPrice: product.oldPrice,
+        hasDiscount: true,
+        discountPercent: Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100),
+        isSpecialOffer: false
+      }
+    } else {
+      return {
+        currentPrice: product.price,
+        oldPrice: product.oldPrice,
+        hasDiscount: false,
+        discountPercent: 0,
+        isSpecialOffer: false
+      }
+    }
+  }
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -112,31 +166,61 @@ const NewCollections = () => {
           dotListClass="nc-carousel-dots"
           itemClass="nc-carousel-item"
         >
-          {products.map((item, i) => (
-            <article className="nc-product-card" key={i} onClick={() => handleViewProduct(item)}  >
-              <div className="nc-product-image-container" style={{ position: "relative" }}>
-                <img
-                  src={getImage(item.images, item.availableColors) || "/logo.png"}
-                  alt={item.name}
-                  className="nc-product-image"
-                />
-                <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
-                  <FavoriteButton productId={item._id} />
+          {products.map((item, i) => {
+            const priceInfo = getDisplayPrices(item)
+            return (
+              <article className="nc-product-card" key={i} onClick={() => handleViewProduct(item)}  >
+                <div className="nc-product-image-container" style={{ position: "relative" }}>
+                  <img
+                    src={getImage(item.images, item.availableColors) || "/logo.png"}
+                    alt={item.name}
+                    className="nc-product-image"
+                  />
+                  {/* Discount Badge */}
+                  {priceInfo.hasDiscount && (
+                    <div 
+                      style={{
+                        position: "absolute",
+                        top: "8px",
+                        left: "8px",
+                        backgroundColor: priceInfo.isSpecialOffer ? "#16a34a" : "#dc2626",
+                        color: "white",
+                        padding: "4px 8px",
+                        borderRadius: "12px",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        zIndex: 5
+                      }}
+                    >
+                      {priceInfo.isSpecialOffer ? "Special Offer" : `${priceInfo.discountPercent}% OFF`}
+                    </div>
+                  )}
+                  <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
+                    <FavoriteButton productId={item._id} />
+                  </div>
                 </div>
-              </div>
-              <div className="nc-product-details">
-                <h3 className="nc-brand-name">{item.brand || "BRAND"}</h3>
-                <p className="nc-product-name">{shortenName(item.name)}</p>
-                <div className="nc-price-container">
-                  <span className="nc-current-price">₹ {item.price}</span>
-                  {item.oldPrice && <span className="nc-original-price">₹ {item.oldPrice}</span>}
+                <div className="nc-product-details">
+                  <h3 className="nc-brand-name">{item.brand || "BRAND"}</h3>
+                  <p className="nc-product-name">{shortenName(item.name)}</p>
+                  <div className="nc-price-container">
+                    <span className="nc-current-price">₹ {priceInfo.currentPrice}</span>
+                    {priceInfo.hasDiscount && priceInfo.oldPrice && (
+                      <span className="nc-original-price">₹ {priceInfo.oldPrice}</span>
+                    )}
+                     {priceInfo.hasDiscount && (
+                    <div style={{ fontSize: "12px", color: "#16a34a", fontWeight: "600", marginTop: "4px" }}>
+                     save ₹{priceInfo.oldPrice - priceInfo.currentPrice}
+                    </div>
+                  )}
+                  </div>
+                 
+                  <button onClick={() => handleViewProduct(item)} className="view-product-btn">
+                    View Product
+                  </button>
                 </div>
-                <button onClick={() => handleViewProduct(item)} className="view-product-btn">
-                  View Product
-                </button>
-              </div>
-            </article>
-          ))}
+              </article>
+            )
+          })}
         </Carousel>
       </div>
     </section>

@@ -1,57 +1,55 @@
-.button-container {
+/* .button-container {
     display: flex;
-    gap: 20px; /* Space between buttons */
+    gap: 20px;  
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-    flex-wrap: wrap; /* Ensures responsiveness */
+    flex-wrap: wrap;  
   }
   
   .custom-button {
-    padding: 20px 40px; /* Increased padding for larger buttons */
-    font-size: 20px; /* Bigger text */
+    padding: 20px 40px; 
+    font-size: 20px;  
     font-weight: bold;
-    /* border: 4px solid orange;  */
+   
     background-color: transparent;
-    /* color: #007bff; */
+   
     cursor: pointer;
-    border-radius: 10px; /* More rounded corners */
+    border-radius: 10px;  
     transition: all 0.3s ease-in-out;
-    width: 250px; /* Increased width */
-    height: 70px; /* Increased height */
+    width: 250px; 
+    height: 70px; 
     text-align: center;
   }
   
   .custom-button:hover {
-    /* background-color: #007bff; */
     color: white;
   }
   
-  /* Specific styling for Info & Orders buttons */
+
   .info-button {
     background-color: #888;
     color: white;
   }
   
   .info-button:hover {
-    /* background-color: #28a745; */
-    /* color: white; */
+
   }
   
   .orders-button {
-    /* /* border-color: orange; */
+ 
     color: white; 
     background-color: orange;
   }
   
   .orders-button:hover {
-    /* background-color: orange; */
+
     color: white;
   }
 
   
   
-  /* Responsive Design */
+ 
   @media (max-width: 768px) {
     .custom-button {
       width: 200px;
@@ -63,7 +61,7 @@
   
   @media (max-width: 480px) {
     .button-container {
-      flex-direction: column; /* Stack buttons on smaller screens */
+      flex-direction: column; 
       gap: 15px;
     }
   
@@ -74,4 +72,7 @@
       padding: 12px 25px;
     }
   }
-  
+   */
+
+
+   

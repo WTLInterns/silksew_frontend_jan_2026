@@ -1,10 +1,11 @@
+
 "use client"
 
 import { useState, useContext, useEffect } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip} from "recharts"
 import "../pages/CSS/AdminPage.css"
 import { AuthContext } from "../context/AuthContext"
 import { ToastContainer, toast } from "react-toastify"
@@ -31,6 +32,8 @@ import {
   faCheckCircle,
   faIndianRupeeSign,
   faClock,
+  faBars,
+  faMedal ,
 } from "@fortawesome/free-solid-svg-icons"
 import AdminUser from "./AdminUser"
 import ShippedOrders from "./ConfirmedOrders"
@@ -38,6 +41,7 @@ import ReturnOrderList from "../components/ReturnOrderList/ReturnOrderList"
 import OfferForm from "../components/OfferForm/OfferForm"
 import UPdateRemoveoffer from "../components/UpdateRemoveOffer/UpdateRemoveOffer"
 import StockAlarm from "../components/StockAlarm"
+import Subscription from "../components/Subscription"
 
 const Dashboard = () => {
   const { user, token, logout } = useContext(AuthContext)
@@ -54,6 +58,23 @@ const Dashboard = () => {
     const storedTotalSales = localStorage.getItem("totalSales")
     return storedTotalSales ? Number.parseFloat(storedTotalSales) : 0
   })
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Check screen size
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const mobile = window.innerWidth <= 768
+      setIsMobile(mobile)
+      if (!mobile) {
+        setSidebarOpen(true) // Open sidebar by default on desktop
+      }
+    }
+
+    checkScreenSize()
+    window.addEventListener("resize", checkScreenSize)
+    
+    return () => window.removeEventListener("resize", checkScreenSize)
+  }, [])
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen)
@@ -61,7 +82,9 @@ const Dashboard = () => {
 
   const handleMenuClick = (option) => {
     setSelectedOption(option)
-    setSidebarOpen(false)
+    if (isMobile) {
+      setSidebarOpen(false)
+    }
   }
 
   const updateTotalProducts = (count) => {
@@ -159,12 +182,25 @@ const Dashboard = () => {
     }
   }, [token, navigate])
 
+  // Lock body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (isMobile && isSidebarOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMobile, isSidebarOpen])
+
   const pieChartData = [
     { name: "Products", value: totalProducts, color: "#4F46E5", icon: faBox },
     { name: "Orders", value: totalOrders, color: "#059669", icon: faShoppingCart },
     { name: "Confirmed", value: confirmedOrdersCount, color: "#D97706", icon: faCheckCircle },
     { name: "Pending", value: pendingOrdersCount, color: "#8B5CF6", icon: faClock },
-    { name: "Sales (100s)", value: Math.round(totalSales / 100), color: "#DC2626", icon: faIndianRupeeSign },
+    { name: "Sales", value: Math.round(totalSales / 100), color: "#DC2626", icon: faIndianRupeeSign },
   ]
 
   const COLORS = ["#4F46E5", "#059669", "#D97706", "#8B5CF6", "#DC2626"]
@@ -226,7 +262,7 @@ const Dashboard = () => {
               margin: "0",
             }}
           >
-            {data.name === "Sales (100s)" ? `₹${(data.value * 100).toLocaleString()}` : data.value.toLocaleString()}
+            {data.name === "Sales" ? `₹${(data.value * 100).toLocaleString()}` : data.value.toLocaleString()}
           </p>
         </div>
       )
@@ -262,44 +298,94 @@ const Dashboard = () => {
   return (
     <>
       <AdminNavbar />
+      
+      {/* Mobile Header with Menu Icon */}
+      {isMobile && (
+        <div style={{
+          position: "fixed",
+          top: "60px",
+          left: 0,
+          right: 0,
+          height: "60px",
+          backgroundColor: "white",
+          display: "flex",
+          alignItems: "center",
+          padding: "0 20px",
+          zIndex: 999,
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          borderBottom: "1px solid #e5e7eb"
+        }}>
+          <button 
+            onClick={toggleSidebar}
+            style={{
+              background: "none",
+              border: "none",
+              fontSize: "24px",
+              cursor: "pointer",
+              color: "#4F46E5",
+              padding: "8px",
+              borderRadius: "6px",
+              marginRight: "15px"
+            }}
+          >
+            <FontAwesomeIcon icon={faBars} />
+          </button>
+          <h2 style={{ 
+            margin: 0, 
+            fontSize: "18px", 
+            fontWeight: "bold",
+            color: "#1e293b"
+          }}>
+            {selectedOption === "Dashboard" ? "Dashboard Overview" : selectedOption}
+          </h2>
+        </div>
+      )}
+
+      {/* Mobile Overlay */}
+      {isMobile && isSidebarOpen && (
+        <div 
+          style={{
+            position: "fixed",
+            top: "120px",
+            left: 0,
+            width: "100%",
+            height: "calc(100vh - 120px)",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 998,
+          }}
+          onClick={toggleSidebar}
+        />
+      )}
+
       <div
         style={{
           display: "flex",
-          height: "calc(100vh - 60px)", // Subtract navbar height
-          overflow: "hidden",
+          minHeight: "100vh",
           backgroundColor: "#bfdbfe",
+          paddingTop: "60px", // Push content below navbar
         }}
       >
         {/* Enhanced Sidebar */}
         <div
           className={`sidebar ${isSidebarOpen ? "open" : ""}`}
           style={{
-            width: "250px",
-            minWidth: "250px",
+            width: isMobile ? "280px" : "250px",
+            minWidth: isMobile ? "280px" : "250px",
             backgroundColor: "white",
             boxShadow: "4px 0 10px rgba(0, 0, 0, 0.1)",
             transition: "all 0.3s ease",
             zIndex: 1000,
             display: "flex",
             flexDirection: "column",
-            position: "relative",
+            position: isMobile ? "fixed" : "fixed",
+            left: isMobile ? (isSidebarOpen ? "0" : "-280px") : "0",
+            top: "60px", // Fixed below navbar for both mobile and desktop
+            height: "calc(100vh - 60px)",
+            transform: isMobile ? 
+              (isSidebarOpen ? "translateX(0)" : "translateX(-100%)") : 
+              "translateX(0)",
           }}
         >
-          {/* <div
-            style={{
-              background: "rgba(0, 0, 0, 1)",
-              color: "white",
-              padding: "16px 20px",
-              fontSize: "18px",
-              fontWeight: "bold",
-              textAlign: "center",
-              letterSpacing: "0.5px",
-              flexShrink: 0,
-            }}
-          >
-            Admin Panel
-          </div> */}
-
           <div
             style={{
               flex: 1,
@@ -307,9 +393,6 @@ const Dashboard = () => {
               overflowX: "hidden",
               display: "flex",
               flexDirection: "column",
-              // Custom scrollbar styling
-              scrollbarWidth: "thin",
-              scrollbarColor: "#cbd5e1 #f1f5f9",
             }}
           >
             <div style={{ flex: 1, paddingBottom: "8px", backgroundColor:"white"}}>
@@ -329,6 +412,7 @@ const Dashboard = () => {
                 { key: "OfferForm", icon: faTags, label: "Add Offers" },
                 { key: "update-remove-offer", icon: faTags, label: "Offers List" },
                 { key: "StockAlarm", icon: faTags, label: "Stock Alarm", notification: lowStockProducts.length },
+                { key: "Subscriptions", icon: faMedal, label: "Subscriptions" }
               ].map((item) => (
                 <div
                   key={item.key}
@@ -347,12 +431,12 @@ const Dashboard = () => {
                   }}
                   onMouseEnter={(e) => {
                     if (selectedOption !== item.key) {
-                      e.target.style.backgroundColor = "#bfdbfe"
+                      e.currentTarget.style.backgroundColor = "#bfdbfe"
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (selectedOption !== item.key) {
-                      e.target.style.backgroundColor = "transparent"
+                      e.currentTarget.style.backgroundColor = "transparent"
                     }
                   }}
                 >
@@ -384,38 +468,37 @@ const Dashboard = () => {
               ))}
             </div>
 
+            {/* Logout Button in Sidebar (for both mobile and desktop) */}
             <div
               onClick={handleLogoutClick}
               style={{
                 display: "flex",
                 alignItems: "center",
-                padding: "12px 16px",
+                padding: "15px 16px",
                 cursor: "pointer",
                 transition: "all 0.2s ease",
-                color: "#64748b",
-                fontWeight: "500",
+                color: "#dc2626",
+                fontWeight: "600",
                 borderTop: "1px solid #e2e8f0",
                 fontSize: "14px",
                 flexShrink: 0,
-                backgroundColor: "white",
-                position: "sticky",
-                bottom: 0,
-                zIndex: 10,
+                backgroundColor: "#fef2f2",
+                margin: "10px",
+                borderRadius: "8px",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#fef2f2"
-                e.currentTarget.style.color = "#dc2626"
+                e.currentTarget.style.backgroundColor = "#dc2626"
+                e.currentTarget.style.color = "white"
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "white"
-                e.currentTarget.style.color = "#64748b"
+                e.currentTarget.style.backgroundColor = "#fef2f2"
+                e.currentTarget.style.color = "#dc2626"
               }}
             >
               <FontAwesomeIcon
                 icon={faSignOutAlt}
                 style={{
                   marginRight: "10px",
-                  marginTop:"5px",
                   width: "14px",
                 }}
               />
@@ -424,69 +507,16 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div
-          className="desktop-logout"
-          onClick={handleLogoutClick}
-          style={{
-            position: "fixed",
-            top: "10px",
-            right: "20px",
-            zIndex: 1001,
-            backgroundColor: "#dc2626",
-            color: "white",
-            padding: "8px 16px",
-            borderRadius: "6px",
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-            cursor: "pointer",
-            fontSize: "14px",
-            fontWeight: "500",
-            transition: "all 0.2s ease",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#b91c1c"
-            e.currentTarget.style.transform = "translateY(-1px)"
-            e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.2)"
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "#dc2626"
-            e.currentTarget.style.transform = "translateY(0)"
-            e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.15)"
-          }}
-        >
-          <FontAwesomeIcon icon={faSignOutAlt} style={{ fontSize: "12px" }} />
-          <span>Logout</span>
-        </div>
-
-        {/* Hamburger Menu for Mobile */}
-        <div
-          className="hamburger-menu"
-          onClick={toggleSidebar}
-          style={{
-            position: "fixed",
-            top: "70px",
-            left: "20px",
-            zIndex: 1001,
-            backgroundColor: "white",
-            padding: "12px",
-            borderRadius: "8px",
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-            cursor: "pointer",
-            display: "none",
-          }}
-        >
-          <div style={{ color: "#64748b", fontSize: "18px" }}>☰</div>
-        </div>
-
         {/* Main Content */}
         <div
           style={{
             flex: 1,
             overflowY: "auto",
             backgroundColor: "#f8fafc",
-            minWidth: 0, // Prevents flex item from growing beyond container
+            minWidth: 0,
+            marginLeft: isMobile ? "0" : "250px", // Proper margin for desktop sidebar
+            padding: isMobile ? "80px 15px 20px 15px" : "25px",
+            minHeight: "calc(100vh - 60px)",
           }}
         >
           {selectedOption === "Dashboard" && (
@@ -494,15 +524,18 @@ const Dashboard = () => {
               style={{
                 minHeight: "100%",
                 background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%)",
-                padding: "20px",
               }}
             >
-              <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+              <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
                 {/* Header */}
-                <div style={{ textAlign: "center", marginBottom: "30px" }}>
+                <div style={{ 
+                  textAlign: "center", 
+                  marginBottom: "30px",
+                  padding: isMobile ? "10px 0" : "0"
+                }}>
                   <h1
                     style={{
-                      fontSize: "2rem",
+                      fontSize: isMobile ? "1.5rem" : "2rem",
                       fontWeight: "bold",
                       color: "#1e293b",
                       marginBottom: "8px",
@@ -522,7 +555,7 @@ const Dashboard = () => {
                   <p
                     style={{
                       color: "#64748b",
-                      fontSize: "1rem",
+                      fontSize: isMobile ? "0.9rem" : "1rem",
                       fontWeight: "500",
                     }}
                   >
@@ -530,12 +563,12 @@ const Dashboard = () => {
                   </p>
                 </div>
 
-                {/* Stats Cards */}
+                {/* Stats Cards - Smaller and in single row */}
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                    gap: "20px",
+                    gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(5, 1fr)",
+                    gap: "15px",
                     marginBottom: "30px",
                   }}
                 >
@@ -547,61 +580,71 @@ const Dashboard = () => {
                         borderRadius: "12px",
                         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
                         border: "1px solid #e2e8f0",
-                        padding: "20px",
+                        padding: "15px",
                         transition: "all 0.3s ease",
                         cursor: "pointer",
+                        textAlign: "center",
+                        minHeight: "100px",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-2px)"
-                        e.currentTarget.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.1)"
+                        if (!isMobile) {
+                          e.currentTarget.style.transform = "translateY(-3px)"
+                          e.currentTarget.style.boxShadow = "0 8px 20px rgba(0, 0, 0, 0.12)"
+                        }
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "translateY(0)"
-                        e.currentTarget.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.05)"
+                        if (!isMobile) {
+                          e.currentTarget.style.transform = "translateY(0)"
+                          e.currentTarget.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.05)"
+                        }
                       }}
                     >
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <div>
-                          <h3
-                            style={{
-                              color: "#64748b",
-                              fontSize: "0.75rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                              marginBottom: "6px",
-                            }}
-                          >
-                            {item.name.replace(" (100s)", "")}
-                          </h3>
-                          <p
-                            style={{
-                              fontSize: "1.5rem",
-                              fontWeight: "bold",
-                              color: "#1e293b",
-                              margin: "0",
-                            }}
-                          >
-                            {item.name === "Sales (100s)"
-                              ? `₹${totalSales.toLocaleString()}`
-                              : item.value.toLocaleString()}
-                          </p>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "1.5rem",
-                            padding: "12px",
-                            borderRadius: "50%",
-                            backgroundColor: `${item.color}15`,
-                            color: item.color,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <FontAwesomeIcon icon={item.icon} />
-                        </div>
+                      <div
+                        style={{
+                          fontSize: "1.2rem",
+                          padding: "10px",
+                          borderRadius: "10px",
+                          backgroundColor: `${item.color}15`,
+                          color: item.color,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          margin: "0 auto 8px auto",
+                          width: "40px",
+                          height: "40px",
+                        }}
+                      >
+                        <FontAwesomeIcon icon={item.icon} />
                       </div>
+                      <h3
+                        style={{
+                          color: "#64748b",
+                          fontSize: "0.7rem",
+                          fontWeight: "600",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.5px",
+                          marginBottom: "5px",
+                          margin: "0",
+                        }}
+                      >
+                        {item.name}
+                      </h3>
+                      <p
+                        style={{
+                          fontSize: "1.3rem",
+                          fontWeight: "bold",
+                          color: "#1e293b",
+                          margin: "0",
+                          lineHeight: "1.2",
+                        }}
+                      >
+                        {item.name === "Sales"
+                          ? `₹${totalSales.toLocaleString()}`
+                          : item.value.toLocaleString()}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -610,23 +653,23 @@ const Dashboard = () => {
                 <div
                   style={{
                     backgroundColor: "white",
-                    borderRadius: "12px",
+                    borderRadius: "15px",
                     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
                     border: "1px solid #e2e8f0",
-                    padding: "24px",
+                    padding: "25px",
                   }}
                 >
-                  <div style={{ textAlign: "center", marginBottom: "24px" }}>
+                  <div style={{ textAlign: "center", marginBottom: "25px" }}>
                     <h2
                       style={{
-                        fontSize: "1.5rem",
+                        fontSize: "1.3rem",
                         fontWeight: "bold",
                         color: "#1e293b",
                         marginBottom: "8px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        gap: "12px",
+                        gap: "10px",
                       }}
                     >
                       <FontAwesomeIcon icon={faChartLine} style={{ color: "#4F46E5" }} />
@@ -642,7 +685,7 @@ const Dashboard = () => {
                     </p>
                   </div>
 
-                  <div style={{ height: "300px" }}>
+                  <div style={{ height: isMobile ? "250px" : "300px" }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <defs>
@@ -659,8 +702,8 @@ const Dashboard = () => {
                           cy="50%"
                           labelLine={false}
                           label={renderCustomizedLabel}
-                          outerRadius={100}
-                          innerRadius={45}
+                          outerRadius={isMobile ? 80 : 100}
+                          innerRadius={isMobile ? 40 : 50}
                           dataKey="value"
                           stroke="rgba(255,255,255,0.8)"
                           strokeWidth={2}
@@ -673,9 +716,9 @@ const Dashboard = () => {
                         <Tooltip content={<CustomTooltip />} />
                         <Legend
                           wrapperStyle={{
-                            fontSize: "12px",
+                            fontSize: "11px",
                             fontWeight: "500",
-                            paddingTop: "16px",
+                            paddingTop: "15px",
                           }}
                           iconType="circle"
                           layout="horizontal"
@@ -684,32 +727,6 @@ const Dashboard = () => {
                         />
                       </PieChart>
                     </ResponsiveContainer>
-                  </div>
-
-                  <div
-                    style={{
-                      backgroundColor: "#eff6ff",
-                      borderRadius: "8px",
-                      padding: "12px",
-                      marginTop: "16px",
-                      textAlign: "center",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "8px",
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faChartLine} style={{ color: "#1d4ed8" }} />
-                    <p
-                      style={{
-                        fontSize: "0.75rem",
-                        color: "#1d4ed8",
-                        fontWeight: "600",
-                        margin: "0",
-                      }}
-                    >
-                      Sales values scaled for optimal chart visualization
-                    </p>
                   </div>
                 </div>
               </div>
@@ -750,16 +767,20 @@ const Dashboard = () => {
               <StockAlarm lowStockProducts={lowStockProducts} />
             </div>
           )}
+          {selectedOption === "Subscriptions" && (
+            <div style={{ position: "relative", zIndex: 10 }}>
+              <Subscription />
+            </div>
+          )}
         </div>
       </div>
       <ToastContainer />
       <style jsx>{`
         @keyframes spin {
-          0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
 
-        /* Enhanced scrollbar styling for sidebar */
+        /* Enhanced scrollbar styling */
         .sidebar::-webkit-scrollbar {
           width: 6px;
         }
@@ -777,43 +798,26 @@ const Dashboard = () => {
         .sidebar::-webkit-scrollbar-thumb:hover {
           background: #94a3b8;
         }
-       
+
+        /* Mobile specific styles */
         @media (max-width: 768px) {
-          .hamburger-menu {
-            display: block !important;
-          }
-
-          /* Hide desktop logout button on mobile */
-          .desktop-logout {
-            display: none !important;
-          }
-         
           .sidebar {
-            position: fixed !important;
-            left: ${isSidebarOpen ? "0" : "-250px"} !important;
-            top: 60px !important;
-            height: calc(100vh - 60px) !important;
-            width: 250px !important;
-            z-index: 1000 !important;
-          }
-        }
-       
-        @media (min-width: 769px) {
-          .sidebar {
-            position: relative !important;
-            left: 0 !important;
-          }
-
-          /* Show desktop logout button only on desktop */
-          .desktop-logout {
-            display: flex !important;
+            transition: transform 0.3s ease;
           }
         }
 
-        /* Hide desktop logout on smaller screens */
-        @media (max-width: 1024px) {
-          .desktop-logout {
-            display: none !important;
+        /* Tablet styles */
+        @media (max-width: 1024px) and (min-width: 769px) {
+          .stats-cards {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+        }
+
+        /* Small mobile styles */
+        @media (max-width: 480px) {
+          .stats-cards {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
           }
         }
       `}</style>

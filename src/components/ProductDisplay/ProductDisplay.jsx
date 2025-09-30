@@ -1,3 +1,4 @@
+
 // "use client"
 
 // import { useState, useContext, useEffect } from "react"
@@ -32,8 +33,62 @@
 //   const [mainImage, setMainImage] = useState("")
 //   const [activeTab, setActiveTab] = useState("description")
 //   const [showLoginModal, setShowLoginModal] = useState(false)
+//   const [descriptionExpanded, setDescriptionExpanded] = useState(false)
 
 //   const navigate = useNavigate()
+//   const [offerCountdown, setOfferCountdown] = useState("")
+//   const [isOfferActive, setIsOfferActive] = useState(false)
+
+
+//   const getOfferCountdown = (offerEndDate) => {
+//     if (!offerEndDate) return null
+
+//     const now = new Date()
+//     const end = new Date(offerEndDate)
+//     const diff = end - now
+
+//     if (diff <= 0) return null // offer expired
+
+//     const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+//     const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
+//     const minutes = Math.floor((diff / (1000 * 60)) % 60)
+//     const seconds = Math.floor((diff / 1000) % 60)
+
+//     if (days >= 1) {
+//       return `${days} day${days > 1 ? 's' : ''} left`
+//     } else {
+//       return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+//     }
+//   }
+
+//   const isWithinOfferWindow = (start, end) => {
+//     if (!end) return false
+//     const now = new Date()
+//     const startDate = start ? new Date(start) : null
+//     const endDate = new Date(end)
+//     return (startDate ? now >= startDate : true) && now < endDate
+//   }
+
+//   const calcDiscountPercent = (price, oldPrice, discountPercent) => {
+//     if (typeof discountPercent === 'number' && discountPercent > 0) return Math.round(discountPercent)
+//     if (oldPrice && oldPrice > price) {
+//       const pct = Math.round(((oldPrice - price) / oldPrice) * 100)
+//       return pct > 0 ? pct : 0
+//     }
+//     return 0
+//   }
+
+//   // Check if product has discount-only offer (no timeline)
+//   const hasDiscountOnly = (product) => {
+//     return product.discountPercent && product.discountPercent > 0 && !product.offerEndDate
+//   }
+
+//   // Calculate discounted price
+//   const calculateDiscountedPrice = (originalPrice, discountPercent) => {
+//     if (!discountPercent || discountPercent <= 0) return originalPrice
+//     return Math.round(originalPrice - (originalPrice * discountPercent / 100))
+//   }
+
 
 //   // Function to clean and validate image URLs
 //   const cleanImageUrl = (url) => {
@@ -103,7 +158,7 @@
 //     return []
 //   }
 
-//     // Handle favorite toggle
+//   // Handle favorite toggle
 //   const handleFavoriteClick = (e) => {
 //     if (!token) {
 //       e.preventDefault();
@@ -114,6 +169,24 @@
 //       navigate("/login")
 //     }
 //   }
+
+
+//   useEffect(() => {
+//     if (!product) return
+//     const active = isWithinOfferWindow(product.offerStartDate, product.offerEndDate)
+//     setIsOfferActive(active)
+//     if (!active) return
+
+//     // initialize immediately
+//     setOfferCountdown(getOfferCountdown(product.offerEndDate))
+
+//     const interval = setInterval(() => {
+//       setOfferCountdown(getOfferCountdown(product.offerEndDate))
+//     }, 1000)
+
+//     return () => clearInterval(interval)
+//   }, [product])
+
 
 //   useEffect(() => {
 //     console.log("ProductDisplay mounted with productId:", productId)
@@ -374,6 +447,12 @@
 //     return colorData
 //   }
 
+//   // Function to truncate description
+//   const truncateDescription = (text, maxLength = 150) => {
+//     if (text.length <= maxLength) return text;
+//     return text.substring(0, maxLength) + '...';
+//   }
+
 //   return (
 //     <>
 //       <div className="productdisplay">
@@ -404,13 +483,73 @@
 //         </div>
 //         <div className="productdisplay-right">
 //           <h2>{product.name}</h2>
-//           <p className="description" style={{ textAlign: "justify" }}>
-//             {product.description}
-//           </p>
-//           <div className="productdisplay-right-prices">
-//             <div className="productdisplay-right-price-new">Rs {product.price}</div>
-//             {product.oldPrice && <div className="productdisplay-right-price-old">Rs {product.oldPrice}</div>}
+//           <div className="product-description-container">
+//             <p className="description" style={{ textAlign: "justify" }}>
+//               {descriptionExpanded ? product.description : truncateDescription(product.description)}
+//             </p>
+//             {product.description.length > 150 && (
+//               <button
+//                 className="description-toggle"
+//                 onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+//               >
+//                 {descriptionExpanded ? 'Read Less' : 'Read More'}
+//               </button>
+//             )}
 //           </div>
+//           {(() => {
+//             const active = isOfferActive
+//             const discountOnly = hasDiscountOnly(product)
+//             const pct = calcDiscountPercent(product.price, product.oldPrice, product.discountPercent)
+            
+//             // For discount-only products, calculate new price from original price
+//             let displayPrice, displayOldPrice, savings = 0
+            
+//             if (discountOnly) {
+//               // Discount-only: show discounted price as new price, original as old price
+//               const originalPrice = product.oldPrice || product.price
+//               displayPrice = calculateDiscountedPrice(originalPrice, product.discountPercent)
+//               displayOldPrice = Math.round(originalPrice)
+//               savings = displayOldPrice - displayPrice
+//             } else if (active) {
+//               // Time-based offer: use existing logic
+//               displayPrice = product.price ? Math.round(product.price) : Math.round(product.oldPrice || product.price)
+//               displayOldPrice = active && product.oldPrice && product.oldPrice > product.price ? Math.round(product.oldPrice) : null
+//               savings = displayOldPrice ? displayOldPrice - displayPrice : 0
+//             } else {
+//               // No offer: show regular price
+//               displayPrice = Math.round(product.price)
+//               displayOldPrice = null
+//             }
+
+//             return (
+//               <>
+//                 <div className="productdisplay-right-prices">
+//                   {/* Offer/Discount Banner for both time-based and discount-only */}
+//                   {((active && (pct > 0 || offerCountdown)) || discountOnly) && (
+//                     <div className="deal-banner">
+//                       {discountOnly && (
+//                         <span className="special-offer-badge">Special Offer</span>
+//                       )}
+//                       {pct > 0 && <span className="discount-badge">{pct}% OFF</span>}
+//                       {offerCountdown && <span className="countdown">{offerCountdown}</span>}
+//                     </div>
+//                   )}
+
+//                   <div className="productdisplay-right-price-new">Rs {displayPrice}</div>
+//                   {displayOldPrice && displayOldPrice !== displayPrice && (
+//                     <div className="productdisplay-right-price-old">Rs {displayOldPrice}</div>
+//                   )}
+//                 </div>
+
+//                 {/* Savings for both time-based and discount-only offers */}
+//                 {((active && product.oldPrice && product.oldPrice > product.price) || (discountOnly && savings > 0)) && (
+//                   <div className="savings-line">
+//                     You save Rs {Math.max(0, Math.round(savings))}
+//                   </div>
+//                 )}
+//               </>
+//             )
+//           })()}
 //           <div className="productdisplay-right-colors">
 //             <h3>Generic Name</h3>
 //             <div className="color-options">{product.subcategory}</div>
@@ -459,14 +598,14 @@
 //           </button>
 //         </div>
 //       </div>
-      
+
 //       {/* Glassy Login Modal */}
 //       {showLoginModal && (
 //         <div className="modal-overlay">
 //           <div className="modal-content glass-modal">
 //             <div className="modal-header">
 //               <h3>Login Required</h3>
-//               <button 
+//               <button
 //                 className="modal-close-btn"
 //                 onClick={() => setShowLoginModal(false)}
 //               >
@@ -477,13 +616,13 @@
 //               <p>You need to login first to add items to your cart.</p>
 //             </div>
 //             <div className="modal-footer">
-//               <button 
+//               <button
 //                 className="modal-btn modal-btn-login"
 //                 onClick={() => navigate("/login")}
 //               >
 //                 Login
 //               </button>
-//               <button 
+//               <button
 //                 className="modal-btn modal-btn-signup"
 //                 onClick={() => navigate("/signup")}
 //               >
@@ -493,7 +632,7 @@
 //           </div>
 //         </div>
 //       )}
-      
+
 //       <div className="descriptionbox">
 //         <div className="descriptionbox-navigator">
 //           <button
@@ -502,7 +641,6 @@
 //           >
 //             Description
 //           </button>
-//           &ensp;&ensp;
 //           <button
 //             className={`descriptionbox-nav-box ${activeTab === "reviews" ? "active" : ""}`}
 //             onClick={() => setActiveTab("reviews")}
@@ -515,12 +653,12 @@
 //             <p>{product.description}</p>
 //           ) : (
 //             <>
-//               <div className="flex">
-//                 <div className="feedback-container">
+//               <div className="review-content">
+//                 <div className="feedback-section">
 //                   <FeedBack productId={productId} onNewFeedback={handleNewFeedback} />
 //                 </div>
-//                 <div className="review-box">
-//                   <h3 className="customer">Customer Reviews</h3>
+//                 <div className="review-section">
+//                   <h3 className="customer-reviews-title">Customer Reviews</h3>
 //                   <div className="review-list-container">
 //                     {filterReview.length > 0 ? (
 //                       <ul className="review-list">
@@ -544,14 +682,14 @@
 //           )}
 //         </div>
 //       </div>
+
+
 //       <RelatedProducts subcategory={product.subcategory} currentProductId={product._id} />
 //     </>
 //   )
 // }
 
 // export default ProductDisplay
-
-
 
 
 "use client"
@@ -569,6 +707,7 @@ import { BASEURL } from "../../config"
 import FavoriteButton from "../common/FavoriteButton"
 import StarRating from "./StarRating"
 import FeedBack from "./FeedBack"
+import { FiShoppingCart } from 'react-icons/fi'
 
 const ProductDisplay = () => {
   const { state } = useLocation()
@@ -591,6 +730,57 @@ const ProductDisplay = () => {
   const [descriptionExpanded, setDescriptionExpanded] = useState(false)
 
   const navigate = useNavigate()
+  const [offerCountdown, setOfferCountdown] = useState("")
+  const [isOfferActive, setIsOfferActive] = useState(false)
+
+  const getOfferCountdown = (offerEndDate) => {
+    if (!offerEndDate) return null
+
+    const now = new Date()
+    const end = new Date(offerEndDate)
+    const diff = end - now
+
+    if (diff <= 0) return null // offer expired
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
+    const minutes = Math.floor((diff / (1000 * 60)) % 60)
+    const seconds = Math.floor((diff / 1000) % 60)
+
+    if (days >= 1) {
+      return `${days} day${days > 1 ? 's' : ''} left`
+    } else {
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    }
+  }
+
+  const isWithinOfferWindow = (start, end) => {
+    if (!end) return false
+    const now = new Date()
+    const startDate = start ? new Date(start) : null
+    const endDate = new Date(end)
+    return (startDate ? now >= startDate : true) && now < endDate
+  }
+
+  const calcDiscountPercent = (price, oldPrice, discountPercent) => {
+    if (typeof discountPercent === 'number' && discountPercent > 0) return Math.round(discountPercent)
+    if (oldPrice && oldPrice > price) {
+      const pct = Math.round(((oldPrice - price) / oldPrice) * 100)
+      return pct > 0 ? pct : 0
+    }
+    return 0
+  }
+
+  // Check if product has discount-only offer (no timeline)
+  const hasDiscountOnly = (product) => {
+    return product.discountPercent && product.discountPercent > 0 && !product.offerEndDate
+  }
+
+  // Calculate discounted price
+  const calculateDiscountedPrice = (originalPrice, discountPercent) => {
+    if (!discountPercent || discountPercent <= 0) return originalPrice
+    return Math.round(originalPrice - (originalPrice * discountPercent / 100))
+  }
 
   // Function to clean and validate image URLs
   const cleanImageUrl = (url) => {
@@ -671,6 +861,22 @@ const ProductDisplay = () => {
       navigate("/login")
     }
   }
+
+  useEffect(() => {
+    if (!product) return
+    const active = isWithinOfferWindow(product.offerStartDate, product.offerEndDate)
+    setIsOfferActive(active)
+    if (!active) return
+
+    // initialize immediately
+    setOfferCountdown(getOfferCountdown(product.offerEndDate))
+
+    const interval = setInterval(() => {
+      setOfferCountdown(getOfferCountdown(product.offerEndDate))
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [product])
 
   useEffect(() => {
     console.log("ProductDisplay mounted with productId:", productId)
@@ -941,105 +1147,242 @@ const ProductDisplay = () => {
     <>
       <div className="productdisplay">
         <ToastContainer />
-        <div className="productdisplay-left">
-          <div className="productdisplay-img-list">
-            {images[selectedColor]?.map((img, i) => (
-              <img
-                key={i}
-                src={cleanImageUrl(img) || "/placeholder.svg"}
-                alt={`Product ${i + 1}`}
-                onClick={() => setMainImage(cleanImageUrl(img))}
-                className={mainImage === cleanImageUrl(img) ? "active" : ""}
-                onError={handleImageError}
-                onLoad={() => console.log("Thumbnail loaded successfully:", img)}
+
+        {/* Main Product Display */}
+        <div className="productdisplay-main">
+          {/* Left Side - Images */}
+          <div className="productdisplay-left">
+            <div className="favorite-button-container">
+              <FavoriteButton 
+                productId={product._id} 
+                onFavoriteClick={handleFavoriteClick}
               />
-            ))}
+            </div>
+            
+            {/* Thumbnail Images */}
+            <div className="productdisplay-img-list">
+              {images[selectedColor]?.map((img, index) => (
+                <img
+                  key={index}
+                  src={cleanImageUrl(img) || "/placeholder.svg"}
+                  alt={`${product.name} ${index + 1}`}
+                  onClick={() => setMainImage(cleanImageUrl(img))}
+                  onError={handleImageError}
+                  className={mainImage === cleanImageUrl(img) ? "active" : ""}
+                />
+              ))}
+            </div>
+
+            {/* Main Image */}
+            <div className="productdisplay-main-img-container">
+              <img
+                src={cleanImageUrl(mainImage) || "/placeholder.svg"}
+                alt={product.name}
+                onError={handleImageError}
+                className="productdisplay-main-img"
+              />
+            </div>
           </div>
-          <div className="productdisplay-img">
-            <img
-              className="productdisplay-main-img"
-              src={cleanImageUrl(mainImage) || "/placeholder.svg"}
-              alt={product.name}
-              onError={handleImageError}
-              onLoad={() => console.log("Main image loaded successfully:", mainImage)}
-            />
+
+          {/* Right Side - Product Details */}
+          <div className="productdisplay-right">
+            <h2>{product.name}</h2>
+
+            {/* Description with Read More */}
+            <div className="description-container">
+              <p className="description">
+                {descriptionExpanded
+                  ? product.description
+                  : truncateDescription(product.description)}
+              </p>
+              {product.description.length > 150 && (
+                <button
+                  onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+                  className="read-more-btn"
+                >
+                  {descriptionExpanded ? "Read Less" : "Read More"}
+                </button>
+              )}
+            </div>
+
+            {/* Price Section */}
+            {(() => {
+              const active = isOfferActive
+              const discountOnly = hasDiscountOnly(product)
+              const pct = calcDiscountPercent(
+                product.price,
+                product.oldPrice,
+                product.discountPercent
+              )
+
+              let displayPrice, displayOldPrice, savings = 0
+
+              if (discountOnly) {
+                const originalPrice = product.oldPrice || product.price
+                displayPrice = calculateDiscountedPrice(originalPrice, product.discountPercent)
+                displayOldPrice = Math.round(originalPrice)
+                savings = displayOldPrice - displayPrice
+              } else if (active) {
+                displayPrice = product.price
+                  ? Math.round(product.price)
+                  : Math.round(product.oldPrice || product.price)
+                displayOldPrice =
+                  active && product.oldPrice && product.oldPrice > product.price
+                    ? Math.round(product.oldPrice)
+                    : null
+                savings = displayOldPrice ? displayOldPrice - displayPrice : 0
+              } else {
+                displayPrice = Math.round(product.price)
+                displayOldPrice = null
+              }
+
+              return (
+                <div className="productdisplay-right-prices">
+                  {/* Offer / Discount Badges */}
+                  {(discountOnly || (active && (pct > 0 || offerCountdown))) && (
+                    <div className="deal-banner">
+                      {discountOnly && (
+                        <span className="special-offer-badge">Special Offer</span>
+                      )}
+                      {pct > 0 && (
+                        <span className="discount-badge">{pct}% OFF</span>
+                      )}
+                      {offerCountdown && offerCountdown !== "0" && (
+                        <span className="countdown">{offerCountdown}</span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="price-container">
+                    <div className="productdisplay-right-price-new">
+                      Rs {displayPrice}
+                    </div>
+                    {displayOldPrice && displayOldPrice !== displayPrice && (
+                      <div className="productdisplay-right-price-old">
+                        Rs {displayOldPrice}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* Color Selection */}
+            <div className="productdisplay-right-colors">
+              <h3>Color</h3>
+              <div className="color-options">
+                {availableColors?.length > 0 ? (
+                  availableColors.map((colorData, index) => {
+                    const colorName = getColorName(colorData)
+                    return (
+                      <div
+                        key={index}
+                        className={`color-circle ${selectedColor === colorName ? "selected" : ""}`}
+                        style={{ backgroundColor: colorName.toLowerCase() }}
+                        onClick={() => handleColorChange(colorName)}
+                        title={colorName}
+                      />
+                    )
+                  })
+                ) : (
+                  <p className="no-options">No colors available</p>
+                )}
+              </div>
+            </div>
+
+            {/* Size Selection */}
+            <div className="productdisplay-right-sizes">
+              <h3>Select Size</h3>
+              <div className="size-options">
+                {availableSizes?.length > 0 ? (
+                  availableSizes.map((size, index) => (
+                    <div
+                      key={index}
+                      className={`size-box ${selectedSize === size ? "selected" : ""}`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-options">No sizes available</p>
+                )}
+              </div>
+            </div>
+
+            {/* Add to Cart Button */}
+            <button
+              onClick={handleAddToCart}
+              className="add-to-cart-btn"
+            >
+              <FiShoppingCart className="cart-icon" />
+              ADD TO CART
+            </button>
           </div>
         </div>
-        <div className="productdisplay-right">
-          <h2>{product.name}</h2>
-          <div className="product-description-container">
-            <p className="description" style={{ textAlign: "justify" }}>
-              {descriptionExpanded ? product.description : truncateDescription(product.description)}
-            </p>
-            {product.description.length > 150 && (
-              <button 
-                className="description-toggle"
-                onClick={() => setDescriptionExpanded(!descriptionExpanded)}
-              >
-                {descriptionExpanded ? 'Read Less' : 'Read More'}
-              </button>
+
+        {/* Description and Reviews Section */}
+        <div className="descriptionbox">
+          <div className="descriptionbox-navigator">
+            <div 
+              className={`descriptionbox-nav-box ${activeTab === "description" ? "active" : ""}`}
+              onClick={() => setActiveTab("description")}
+            >
+              Description
+            </div>
+            <div 
+              className={`descriptionbox-nav-box ${activeTab === "reviews" ? "active" : ""}`}
+              onClick={() => setActiveTab("reviews")}
+            >
+              Reviews
+            </div>
+          </div>
+
+          <div className="descriptionbox-description">
+            {activeTab === "description" ? (
+              <p>{product.description}</p>
+            ) : (
+              <div className="review-content">
+                {/* Feedback Form */}
+                <div className="feedback-section">
+                  <FeedBack productId={productId} onNewFeedback={handleNewFeedback} />
+                </div>
+
+                {/* Reviews List */}
+                <div className="review-section">
+                  <h3 className="customer-reviews-title">Customer Reviews</h3>
+                  
+                  <div className="review-list-container">
+                    {filterReview.length > 0 ? (
+                      <ul className="review-list">
+                        {filterReview.map((review) => (
+                          <li key={review._id} className="review-item">
+                            <div className="review-header">
+                              <h4 className="review-name">{review.name}</h4>
+                              <StarRating star={review.rating} />
+                            </div>
+                            <p className="review-text">{review.review}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="no-reviews">No reviews yet. Be the first to review!</p>
+                    )}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
-          <div className="productdisplay-right-prices">
-            <div className="productdisplay-right-price-new">Rs {product.price}</div>
-            {product.oldPrice && <div className="productdisplay-right-price-old">Rs {product.oldPrice}</div>}
-          </div>
-          <div className="productdisplay-right-colors">
-            <h3>Generic Name</h3>
-            <div className="color-options">{product.subcategory}</div>
-          </div>
-          <div className="productdisplay-right-colors">
-            <h3>Available Colors</h3>
-            <div className="color-options">
-              {availableColors && availableColors.length > 0 ? (
-                availableColors.map((colorData, i) => {
-                  const colorName = getColorName(colorData)
-                  return (
-                    <div
-                      key={i}
-                      className={`color-circle ${selectedColor === colorName ? "selected" : ""}`}
-                      style={{ backgroundColor: colorName.toLowerCase() }}
-                      onClick={() => handleColorChange(colorName)}
-                      title={colorName}
-                    />
-                  )
-                })
-              ) : (
-                <p>No colors available</p>
-              )}
-            </div>
-          </div>
-          <div className="productdisplay-right-sizes">
-            <h3>Available Size</h3>
-            <div className="size-options">
-              {availableSizes && availableSizes.length > 0 ? (
-                availableSizes.map((size, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedSize(size)}
-                    className={`size-box ${selectedSize === size ? "selected" : ""}`}
-                  >
-                    {size}
-                  </button>
-                ))
-              ) : (
-                <p>No sizes available</p>
-              )}
-            </div>
-          </div>
-          <button className="add-to-cart-btn" onClick={handleAddToCart}>
-            Add to Cart
-          </button>
         </div>
       </div>
-      
+
       {/* Glassy Login Modal */}
       {showLoginModal && (
         <div className="modal-overlay">
-          <div className="modal-content glass-modal">
+          <div className="glass-modal">
             <div className="modal-header">
               <h3>Login Required</h3>
-              <button 
+              <button
                 className="modal-close-btn"
                 onClick={() => setShowLoginModal(false)}
               >
@@ -1050,13 +1393,13 @@ const ProductDisplay = () => {
               <p>You need to login first to add items to your cart.</p>
             </div>
             <div className="modal-footer">
-              <button 
+              <button
                 className="modal-btn modal-btn-login"
                 onClick={() => navigate("/login")}
               >
                 Login
               </button>
-              <button 
+              <button
                 className="modal-btn modal-btn-signup"
                 onClick={() => navigate("/signup")}
               >
@@ -1066,58 +1409,11 @@ const ProductDisplay = () => {
           </div>
         </div>
       )}
-      
-      <div className="descriptionbox">
-        <div className="descriptionbox-navigator">
-          <button
-            className={`descriptionbox-nav-box ${activeTab === "description" ? "active" : ""}`}
-            onClick={() => setActiveTab("description")}
-          >
-            Description
-          </button>
-          &ensp;&ensp;
-          <button
-            className={`descriptionbox-nav-box ${activeTab === "reviews" ? "active" : ""}`}
-            onClick={() => setActiveTab("reviews")}
-          >
-            Reviews ({filterReview.length})
-          </button>
-        </div>
-        <div className="descriptionbox-description" style={{ textAlign: "justify" }}>
-          {activeTab === "description" ? (
-            <p>{product.description}</p>
-          ) : (
-            <>
-              <div className="flex">
-                <div className="feedback-container">
-                  <FeedBack productId={productId} onNewFeedback={handleNewFeedback} />
-                </div>
-                <div className="review-box">
-                  <h3 className="customer">Customer Reviews</h3>
-                  <div className="review-list-container">
-                    {filterReview.length > 0 ? (
-                      <ul className="review-list">
-                        {filterReview.map((review) => (
-                          <li key={review._id} className="review-item">
-                            <div className="review-header">
-                              <h4 className="review-name">{review.name}</h4>
-                              <StarRating star={review.rating} className="star-rating" />
-                            </div>
-                            <p className="review-text">{review.review}</p>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="no-reviews">No reviews yet.</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-      <RelatedProducts subcategory={product.subcategory} currentProductId={product._id} />
+
+      <RelatedProducts 
+        subcategory={product.subcategory} 
+        currentProductId={product._id} 
+      />
     </>
   )
 }

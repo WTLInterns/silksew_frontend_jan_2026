@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import { useState, useEffect, useContext, useCallback } from "react"
 // import axios from "axios"
 // import { AuthContext } from "../context/AuthContext"
@@ -4889,6 +4890,8 @@
 // export default React.memo(AdminProductlist)
 
 
+=======
+>>>>>>> 7acf7c1 (Lated Updated Frontend 30-09-2025)
 
 "use client"
 
@@ -4917,6 +4920,15 @@ const useDebounce = (value, delay) => {
     return () => {
       clearTimeout(handler)
     }
+
+  // Offer window helper (top-level)
+  const isWithinOfferWindow = (start, end) => {
+    if (!end) return false
+    const now = new Date()
+    const startDate = start ? new Date(start) : null
+    const endDate = new Date(end)
+    return (startDate ? now >= startDate : true) && now < endDate
+  }
   }, [value, delay])
 
   return debouncedValue
@@ -4973,6 +4985,8 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
   const [showWarningModal, setShowWarningModal] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [previousSizes, setPreviousSizes] = useState([])
+  const [countdowns, setCountdowns] = useState({})
+
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300)
 
@@ -4980,21 +4994,21 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
 
   const subcategories = {
     women: [
-    "Traditional Wear",
-    "Casual Wear",
-    "Formal Wear",
-    "Ethnic Wear",
-    "Street Style",
-    "Smart Casuals",
-    "Athleisure",
-    "Summer Wear",
-    "Winter Wear",
-    "Party Wear",
-    "Wedding Wear",
-    "Indo-Western",
-    "Loungewear",
-    "Vacation Wear",
-    "Festive Wear",
+      "Traditional Wear",
+      "Casual Wear",
+      "Formal Wear",
+      "Ethnic Wear",
+      "Street Style",
+      "Smart Casuals",
+      "Athleisure",
+      "Summer Wear",
+      "Winter Wear",
+      "Party Wear",
+      "Wedding Wear",
+      "Indo-Western",
+      "Loungewear",
+      "Vacation Wear",
+      "Festive Wear",
     ]
   }
 
@@ -5138,6 +5152,52 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
     { name: "YellowGreen" },
   ]
 
+
+  const getOfferCountdown = (offerEndDate) => {
+    const now = new Date()
+    const end = new Date(offerEndDate)
+    const diff = end - now
+
+    if (diff <= 0) return null // offer expired
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
+    const minutes = Math.floor((diff / (1000 * 60)) % 60)
+    const seconds = Math.floor((diff / 1000) % 60)
+
+    if (days >= 1) {
+      return `${days} day${days > 1 ? 's' : ''} left`
+    } else {
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    }
+  }
+
+  // Determine if an offer is currently active
+  const isWithinOfferWindow = (start, end) => {
+    if (!end) return false
+    const now = new Date()
+    const startDate = start ? new Date(start) : null
+    const endDate = new Date(end)
+    return (startDate ? now >= startDate : true) && now < endDate
+  }
+
+  // Check if product has discount-only offer (no timeline)
+  const hasDiscountOnly = (product) => {
+    return product.discountPercent && product.discountPercent > 0 && !product.offerEndDate
+  }
+
+  // Check if offer is expired
+  const isOfferExpired = (product) => {
+    if (!product.offerEndDate) return false
+    return new Date(product.offerEndDate) < new Date()
+  }
+
+  // Calculate discounted price
+  const calculateDiscountedPrice = (originalPrice, discountPercent) => {
+    if (!discountPercent || discountPercent <= 0) return originalPrice
+    return Math.round(originalPrice - (originalPrice * discountPercent / 100))
+  }
+
   // Enhanced function to process sizes and ensure plain text format
   const processSizes = useCallback((availableSizes) => {
     if (!availableSizes) return []
@@ -5194,6 +5254,20 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
       toast.error("Failed to fetch products.")
     }
   }, [token, updateTotalProducts, updateLowStockProducts])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const updatedCountdowns = {}
+      products.forEach((product) => {
+        if (product.offerEndDate && isWithinOfferWindow(product.offerStartDate, product.offerEndDate)) {
+          updatedCountdowns[product._id] = getOfferCountdown(product.offerEndDate)
+        }
+      })
+      setCountdowns(updatedCountdowns)
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [products])
+
 
   useEffect(() => {
     let mounted = true
@@ -5307,7 +5381,8 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
         }
       }
 
-      // Set form fields
+      // Set form fields - allow reapplying offers on expired products
+      const isExpired = isOfferExpired(product)
       form.setFieldsValue({
         ...product,
         category: product.category?.[0],
@@ -5315,6 +5390,10 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
         colors,
         stock: product.availableStock,
         sizes,
+        // Clear expired offer data to allow reapplying
+        discountPercent: isExpired ? 0 : product.discountPercent,
+        offerStartDate: isExpired ? "" : product.offerStartDate,
+        offerEndDate: isExpired ? "" : product.offerEndDate,
       })
 
       // Images grouped by color
@@ -5445,8 +5524,13 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
         const productData = new FormData()
         productData.append("name", values.name)
         productData.append("description", values.description)
-        productData.append("price", values.price)
-        productData.append("oldPrice", values.oldPrice || "")
+        productData.append("price", Math.round(values.price));
+        productData.append("oldPrice", values.oldPrice ? Math.round(values.oldPrice) : "");
+        productData.append("discountPercent", values.discountPercent || 0);
+        const startISO = values.offerStartDate ? new Date(values.offerStartDate).toISOString() : ""
+        const endISO = values.offerEndDate ? new Date(values.offerEndDate).toISOString() : ""
+        productData.append("offerStartDate", startISO);
+        productData.append("offerEndDate", endISO);
         productData.append("category", values.category)
         productData.append("subcategory", values.subcategory)
         productData.append("availableStock", values.stock)
@@ -5505,6 +5589,7 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
         productData.append("images", JSON.stringify(uploadedImagesByColor))
 
         const response = isAdding
+<<<<<<< HEAD
           ? await axios.post("https://api.silksew.com/api/products", productData, {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -5517,6 +5602,20 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
                 "Content-Type": "multipart/form-data",
               },
             })
+=======
+          ? await axios.post("http://localhost:5001/api/products", productData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          : await axios.put(`http://localhost:5001/api/products/${editingProduct._id}`, productData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+>>>>>>> 7acf7c1 (Lated Updated Frontend 30-09-2025)
 
         if (response.data) {
           toast.success(isAdding ? "Product added successfully!" : "Product updated successfully!")
@@ -5580,14 +5679,19 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
 
   const renderSearchSection = useCallback(
     () => (
-      <div className="search-section">
-        <Input
-          placeholder="Search products..."
-          prefix={<SearchOutlined />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          allowClear
-        />
+     
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Product List</h2>
+        <div className="search-section">
+          <Input
+            placeholder="Search products..."
+            prefix={<SearchOutlined />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            allowClear
+            style={{ width: '300px', padding: "10px" }}
+          />
+        </div>
       </div>
     ),
     [searchTerm],
@@ -5596,7 +5700,7 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
   const renderProductTable = useCallback(
     () => (
       <>
-        <h2>Admin Product List</h2>
+        {/* <h2>Admin Product List</h2> */}
         {renderSearchSection()}
         <table className="product-table">
           <thead>
@@ -5612,10 +5716,11 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
               <th>Old Price</th>
               <th>Stock</th>
               <th>Actions</th>
+              <th>Offer Countdown</th>
             </tr>
           </thead>
           <tbody>
-            {currentProducts.map((product, index) => {
+            {currentProducts?.map((product, index) => {
               let displayColors = []
               if (typeof product.availableColors === "string") {
                 try {
@@ -5645,8 +5750,27 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
                   <td data-label="Sub Category">{product.subcategory.join(", ")}</td>
                   <td data-label="Colors">{displayColors.join(", ") || "N/A"}</td>
                   <td data-label="Sizes">{displaySizes.join(", ") || "N/A"}</td>
-                  <td data-label="Price">Rs.{product.price}</td>
-                  <td data-label="Old Price">{product.oldPrice ? `Rs.${product.oldPrice}` : "N/A"}</td>
+                  <td data-label="Price">
+                    {(() => {
+                      const discountOnly = hasDiscountOnly(product)
+                      if (discountOnly) {
+                        const originalPrice = product.oldPrice || product.price
+                        const discountedPrice = calculateDiscountedPrice(originalPrice, product.discountPercent)
+                        return `Rs.${discountedPrice}`
+                      }
+                      return `Rs.${Math.round(product.price)}`
+                    })()} 
+                  </td>
+                  <td data-label="Old Price">
+                    {(() => {
+                      const discountOnly = hasDiscountOnly(product)
+                      if (discountOnly) {
+                        const originalPrice = product.oldPrice || product.price
+                        return `Rs.${Math.round(originalPrice)}`
+                      }
+                      return product.oldPrice ? `Rs.${Math.round(product.oldPrice)}` : "N/A"
+                    })()} 
+                  </td>
                   <td data-label="Stock">{product.availableStock}</td>
                   <td data-label="Actions">
                     <Button
@@ -5663,6 +5787,98 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
                       className="delete-btn"
                     />
                   </td>
+                  <td data-label="Offer Countdown">
+                    {(() => {
+                      const discountOnly = hasDiscountOnly(product)
+                      const timeBasedOffer = isWithinOfferWindow(product.offerStartDate, product.offerEndDate)
+                      const expired = isOfferExpired(product)
+                      
+                      if (discountOnly) {
+                        // Show discount percentage for discount-only products
+                        return (
+                          <span
+                            style={{
+                              color: "green",
+                              border: "1px solid green",
+                              borderRadius: "9999px",
+                              padding: "4px 10px",
+                              backgroundColor: "white",
+                              display: "inline-block",
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              whiteSpace: 'nowrap'
+                            }}
+                          >
+                            {product.discountPercent}% OFF
+                          </span>
+                        )
+                      } else if (timeBasedOffer) {
+                        // Show countdown for time-based offers
+                        return countdowns[product._id] ? (
+                          <span
+                            style={{
+                              color: "green",
+                              border: "1px solid green",
+                              borderRadius: "9999px",
+                              padding: "4px 10px",
+                              backgroundColor: "white",
+                              display: "inline-block",
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              whiteSpace: 'nowrap'
+                            }}
+                          >
+                            {countdowns[product._id]}
+                          </span>
+                        ) : (
+                          "--:--:--"
+                        )
+                      } else if (expired) {
+                        // Show expired status with reapply option
+                        return (
+                          <span
+                            style={{
+                              color: "#dc2626",
+                              border: "1px solid #dc2626",
+                              borderRadius: "9999px",
+                              padding: "4px 10px",
+                              backgroundColor: "white",
+                              display: "inline-block",
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              whiteSpace: 'nowrap',
+                              fontSize: "11px"
+                            }}
+                          >
+                            Expired - Can Reapply
+                          </span>
+                        )
+                      } else if (product.offerEndDate) {
+                        // Show status for scheduled offers
+                        return (
+                          <span
+                            style={{
+                              color: "#f59e0b",
+                              border: "1px solid #f59e0b",
+                              borderRadius: "9999px",
+                              padding: "4px 10px",
+                              backgroundColor: "white",
+                              display: "inline-block",
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              whiteSpace: 'nowrap'
+                            }}
+                          >
+                            Scheduled
+                          </span>
+                        )
+                      } else {
+                        // No offer
+                        return "-"
+                      }
+                    })()} 
+                  </td>
+
                 </tr>
               )
             })}
@@ -5697,33 +5913,76 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
     }
 
     return (
-      <div className="pagination">
-        <Button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
-          Prev
+
+      <div className="pagination flex items-center justify-center space-x-2 mt-6">
+        {/* Left Arrow Button */}
+        <Button
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="flex items-center justify-center w-10 h-10 rounded-md border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
         </Button>
+
+        {/* First page indicator */}
         {startPage > 1 && (
           <>
-            <Button onClick={() => paginate(1)}>1</Button>
-            {startPage > 2 && <span>...</span>}
+            <Button onClick={() => paginate(1)} type="default">1</Button>
+            {startPage > 2 && <span className="text-gray-500">...</span>}
           </>
         )}
+
+        {/* Page number buttons */}
         {pageNumbers.map((pageNumber) => (
           <Button
             key={pageNumber}
             onClick={() => paginate(pageNumber)}
             type={currentPage === pageNumber ? "primary" : "default"}
+            className="min-w-10 h-10"
           >
             {pageNumber}
           </Button>
         ))}
+
+        {/* Last page indicator */}
         {endPage < totalPages && (
           <>
-            {endPage < totalPages - 1 && <span>...</span>}
-            <Button onClick={() => paginate(totalPages)}>{totalPages}</Button>
+            {endPage < totalPages - 1 && <span className="text-black-500">...</span>}
+            <Button onClick={() => paginate(totalPages)} type="default">{totalPages}</Button>
           </>
         )}
-        <Button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages}>
-          Next
+
+        {/* Right Arrow Button */}
+        <Button
+          onClick={() => paginate(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="flex items-center justify-center w-10 h-10 rounded-md border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
         </Button>
       </div>
     )
@@ -5734,6 +5993,19 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
       {editingProduct || isAdding ? (
         <div className="product-form" style={{ maxHeight: "80vh", overflowY: "auto" }}>
           <h2>{isAdding ? "Add New Product" : "Edit Product"}</h2>
+          {editingProduct && isOfferExpired(editingProduct) && (
+            <div style={{ 
+              backgroundColor: "#fef3c7", 
+              border: "1px solid #f59e0b", 
+              borderRadius: "8px", 
+              padding: "12px", 
+              marginBottom: "16px" 
+            }}>
+              <p style={{ margin: 0, color: "#92400e", fontWeight: "600" }}>
+                ⚠️ This product's offer has expired. You can now apply a new discount or set up a new time-based offer.
+              </p>
+            </div>
+          )}
           <Form form={form} layout="vertical" onFinish={handleSubmitProduct}>
             <Form.Item name="name" label="Product Name" rules={[{ required: true }]}>
               <Input placeholder="Enter product name" />
@@ -5752,7 +6024,7 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
             {selectedCategory && (
               <Form.Item name="subcategory" label="Subcategory" rules={[{ required: true }]}>
                 <Select placeholder="Select subcategory">
-                  {subcategories[selectedCategory].map((sub) => (
+                  {subcategories[selectedCategory]?.map((sub) => (
                     <Option key={sub} value={sub}>
                       {sub}
                     </Option>
@@ -5779,7 +6051,45 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
               <InputNumber style={{ width: "100%" }} min={0.01} step={0.01} placeholder="Enter price" />
             </Form.Item>
 
-            <Form.Item name="oldPrice" label="Old Price">
+
+
+             // Add these inside Form in your edit/add product section
+
+            <Form.Item
+              name="discountPercent"
+              label="Discount (%)"
+              rules={[
+                {
+                  type: "number",
+                  min: 0,
+                  max: 100,
+                  message: "Discount must be between 0 and 100",
+                },
+              ]}
+            >
+              <InputNumber style={{ width: "100%" }} min={0} max={100} placeholder="Enter discount percent" />
+            </Form.Item>
+
+            <Form.Item
+              name="offerStartDate"
+              label="Offer Start Date/Time"
+            >
+              <Input type="datetime-local" style={{ width: "100%" }} />
+            </Form.Item>
+
+            <Form.Item
+              name="offerEndDate"
+              label="Offer End Date/Time"
+            >
+              <Input type="datetime-local" style={{ width: "100%" }} />
+            </Form.Item>
+
+
+
+
+
+
+            <Form.Item name="oldPrice" label="Old Price (Required for discount calculation)">
               <InputNumber style={{ width: "100%" }} min={0} placeholder="Enter old price" />
             </Form.Item>
 
@@ -5857,8 +6167,8 @@ function AdminProductlist({ updateTotalProducts, updateLowStockProducts }) {
         </div>
       ) : (
         <div>
-          <Button type="primary" onClick={handleAddProduct} style={{ marginBottom: 16 }}>
-            <PlusOutlined /> Add New Product
+          <Button onClick={handleAddProduct} style={{ marginBottom: 16, backgroundColor: "black", color: "white", padding: 20 }}>
+            <PlusOutlined style={{ color: "white", fontWeight: "bold" }} /> Add New Product
           </Button>
           {renderProductTable()}
           {renderPagination()}

@@ -20,7 +20,7 @@ const Button = ({ children, size, onClick, ...props }) => {
     <button
       onClick={onClick}
       style={{
-        backgroundColor: "#f59e0b", // amber-500
+        backgroundColor: "#d97706", // amber-500
         color: "#ffffff",
         border: "none",
         borderRadius: "6px",
@@ -101,14 +101,35 @@ const CardContent = ({ children, style }) => {
 export function Newsletter() {
   const [email, setEmail] = useState("")
 
-  const handleSubscribe = () => {
-    if (email) {
-      alert(`Thank you for subscribing with email: ${email}`)
-      setEmail("")
-    } else {
-      alert("Please enter your email address")
-    }
+  const handleSubscribe = async () => {
+  if (!email) {
+    alert("Please enter your email address");
+    return;
   }
+
+  try {
+    const response = await fetch("http://localhost:5001/api/subscribe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert(data.message); // "Subscribed successfully & email sent!"
+      setEmail(""); // clear input
+    } else {
+      alert(data.message || "Subscription failed!");
+    }
+  } catch (error) {
+    console.error("Error subscribing:", error);
+    alert("An error occurred. Please try again later.");
+  }
+};
+
 
   const sectionStyles = {
     padding: "80px 0",

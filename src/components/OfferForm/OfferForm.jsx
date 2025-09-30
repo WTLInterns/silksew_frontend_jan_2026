@@ -1,663 +1,440 @@
-// import React, { useState } from "react";
-// import axios from "axios";
-// import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
-
-// const OfferForm = () => {
-//   const [formData, setFormData] = useState({
-//     code: "",
-//     offerType: "percentage",
-//     value: "",
-//     description: "",
-//     startDate: "",
-//     endDate: "",
-//     eligibleProducts: "",
-//     active: true,
-//   });
-//   const [submissionError, setSubmissionError] = useState(false);
-
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setSubmissionError(false);
-//     try {
-//       await axios.post("https://api.silksew.com/api/offer/create-offer", formData);
-//       toast.success("Offer Created Successfully!");
-//       setFormData({
-//         code: "",
-//         offerType: "percentage",
-//         value: "",
-//         description: "",
-//         startDate: "",
-//         endDate: "",
-//         eligibleProducts: "",
-//         active: true,
-//       });
-//     } catch (error) {
-//       console.error("Error creating offer", error);
-//       setSubmissionError(true);
-//       toast.error("Failed to create offer. Please try again.");
-//       setTimeout(() => setSubmissionError(false), 500); // Reset shake after animation
-//     }
-//   };
-
-//   return (
-//     <>
-//       <style>
-//         {`
-//           .offer-form-container {
-//            margin-top: 20;
-//             display: flex;
-//             justify-content: center;
-//             align-items: center;
-//             min-height: 100vh;
-//             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
-//             padding: 48px 32px 24px;
-//             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-//           }
-
-//           .offer-form {
-//             background-color: #ffffff;
-//             padding: 2rem;
-//             border-radius: 8px;
-//             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-//             width: 100%;
-//             max-width: 500px;
-//             animation: fadeInScale 0.5s ease-out;
-//           }
-
-//           .offer-form.shake {
-//             animation: shake 0.4s ease-in-out;
-//           }
-
-//           @keyframes fadeInScale {
-//             from {
-//               opacity: 0;
-//               transform: scale(0.95);
-//             }
-//             to {
-//               opacity: 1;
-//               transform: scale(1);
-//             }
-//           }
-
-//           @keyframes shake {
-//             0%, 100% { transform: translateX(0); }
-//             20%, 60% { transform: translateX(-8px); }
-//             40%, 80% { transform: translateX(8px); }
-//           }
-
-//           .offer-form:hover {
-//             transform: translateY(-4px);
-//             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-//           }
-
-//           .offer-form h2 {
-//             text-align: center;
-//             color: #4f46e5;
-//             margin-bottom: 1.5rem;
-//             font-size: 1.8rem;
-//             font-weight: 600;
-//           }
-
-//           .offer-form form {
-//             display: flex;
-//             flex-direction: column;
-//             gap: 1rem;
-//           }
-
-//           .offer-form label {
-//             font-size: 0.95rem;
-//             color: #1f2937;
-//             font-weight: 500;
-//             margin-bottom: 0.3rem;
-//             display: block;
-//             transition: transform 0.2s ease, color 0.2s ease;
-//           }
-
-//           .offer-form label:hover {
-//             transform: translateY(-2px);
-//             color: #4f46e5;
-//           }
-
-//           .offer-form input[type="text"],
-//           .offer-form input[type="number"],
-//           .offer-form input[type="date"],
-//           .offer-form select {
-//             width: 100%;
-//             padding: 0.75rem;
-//             border: 1px solid #d1d5db;
-//             border-radius: 8px;
-//             font-size: 0.95rem;
-//             color: #1f2937;
-//             background: #f9fafb;
-//             transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-//           }
-
-//           .offer-form input[type="text"]:focus,
-//           .offer-form input[type="number"]:focus,
-//           .offer-form input[type="date"]:focus,
-//           .offer-form select:focus {
-//             outline: none;
-//             border-color: #4f46e5;
-//             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-//             transform: scale(1.02);
-//             animation: glow 1s infinite alternate;
-//           }
-
-//           @keyframes glow {
-//             from {
-//               box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-//             }
-//             to {
-//               box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.2);
-//             }
-//           }
-
-//           .offer-form input[type="checkbox"] {
-//             margin-left: 0.5rem;
-//             accent-color: #4f46e5;
-//             width: 1.2rem;
-//             height: 1.2rem;
-//             vertical-align: middle;
-//             transition: transform 0.2s ease;
-//           }
-
-//           .offer-form input[type="checkbox"]:checked {
-//             transform: scale(1.2);
-//             animation: checkScale 0.3s ease;
-//           }
-
-//           @keyframes checkScale {
-//             0% { transform: scale(1); }
-//             50% { transform: scale(1.3); }
-//             100% { transform: scale(1.2); }
-//           }
-
-//           .offer-form .checkbox-label {
-//             display: flex;
-//             align-items: center;
-//             gap: 0.5rem;
-//             font-size: 0.95rem;
-//             color: #1f2937;
-//           }
-
-//           .offer-form button {
-//             width: 100%;
-//             padding: 0.85rem;
-//             background: #4f46e5;
-//             color: #ffffff;
-//             border: none;
-//             border-radius: 8px;
-//             font-size: 1rem;
-//             font-weight: 500;
-//             cursor: pointer;
-//             margin-top: 1rem;
-//             transition: background 0.2s ease, transform 0.2s ease;
-//           }
-
-//           .offer-form button:hover {
-//             background: #4338ca;
-//             transform: translateY(-2px);
-//             animation: pulse 0.6s infinite;
-//           }
-
-//           .offer-form button:active {
-//             transform: scale(0.95);
-//           }
-
-//           @keyframes pulse {
-//             0% { transform: translateY(-2px) scale(1); }
-//             50% { transform: translateY(-2px) scale(1.05); }
-//             100% { transform: translateY(-2px) scale(1); }
-//           }
-
-//           @media (max-width: 480px) {
-//             .offer-form-container {
-//               padding: 32px 16px 16px;
-//             }
-
-//             .offer-form {
-//               padding: 1.5rem;
-//             }
-
-//             .offer-form h2 {
-//               font-size: 1.5rem;
-//             }
-
-//             .offer-form input[type="text"]:focus,
-//             .offer-form input[type="number"]:focus,
-//             .offer-form input[type="date"]:focus,
-//             .offer-form select:focus {
-//               animation: none; /* Disable glow on mobile for performance */
-//             }
-
-//             .offer-form button:hover {
-//               animation: none; /* Disable pulse on mobile */
-//             }
-//           }
-//         `}
-//       </style>
-//       <div className="offer-form-container">
-//         <div className={`offer-form ${submissionError ? "shake" : ""}`}>
-//           <h2>Create Offer</h2>
-//           <form onSubmit={handleSubmit}>
-//             <label>Code:</label>
-//             <input
-//               type="text"
-//               name="code"
-//               value={formData.code}
-//               onChange={handleChange}
-//               required
-//             />
-
-//             <label>Offer Type:</label>
-//             <select
-//               name="offerType"
-//               value={formData.offerType}
-//               onChange={handleChange}
-//               required
-//             >
-//               <option value="percentage">Percentage</option>
-//               <option value="flat">Flat</option>
-//             </select>
-
-//             <label>Value:</label>
-//             <input
-//               type="number"
-//               name="value"
-//               value={formData.value}
-//               onChange={handleChange}
-//               required
-//             />
-
-//             <label>Description:</label>
-//             <input
-//               type="text"
-//               name="description"
-//               value={formData.description}
-//               onChange={handleChange}
-//             />
-
-//             <label>Start Date:</label>
-//             <input
-//               type="date"
-//               name="startDate"
-//               value={formData.startDate}
-//               onChange={handleChange}
-//             />
-
-//             <label>End Date:</label>
-//             <input
-//               type="date"
-//               name="endDate"
-//               value={formData.endDate}
-//               onChange={handleChange}
-//             />
-
-//             <label className="checkbox-label">
-//               Active:
-//               <input
-//                 type="checkbox"
-//                 name="active"
-//                 checked={formData.active}
-//                 onChange={() =>
-//                   setFormData({ ...formData, active: !formData.active })
-//                 }
-//               />
-//             </label>
-
-//             <button type="submit">Create Offer</button>
-//           </form>
-//         </div>
-//       </div>
-//       <ToastContainer style={{marginTop:50}} />
-//     </>
-//   );
-// };
-
-// export default OfferForm;
-
-
-
 import React, { useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const OfferForm = () => {
+
+
+  const categories = [
+    { label: "Indian & Fusion Wear", value: "indian_fusion" },
+    { label: "Western Wear", value: "western" },
+    { label: "Formal Wear", value: "formal" },
+    { label: "New Arrivals", value: "new_arrivals" },
+  ];
+
+  const subcategories = {
+    indian_fusion: ["Traditional Wear", "Ethnic Wear", "Kurtis", "Tops & Tunics", "Wedding Wear", "Sarees", "Lehengas", "Salwar Suits", "Indo Western"],
+    western: ["Casual Wear", "Office Wear", "Business Casual", "Blazers", "Formal Dresses", "Work Wear", "Street Style", "Athleisure", "Summer Wear", "Winter Wear", "Party Wear"],
+    formal: ["Formal Wear", "Office Wear", "Business Casual", "Blazers", "Formal Dresses", "Work Wear"],
+    new_arrivals: ["Kurtis"]
+  };
   const [formData, setFormData] = useState({
     code: "",
+    offerScope: "category",
     offerType: "percentage",
     value: "",
     description: "",
     startDate: "",
     endDate: "",
     eligibleProducts: "",
-    category: "", // ✅ added category
+    eligibleUsers: "",
+    category: "",
+    price: "",
     active: true,
+    mahasale: {
+      festivalName: "",
+      bannerImage: "",
+      status: "COMING SOON",
+      themeColor: "#ff3e6c",
+      featuredText: ""
+    }
   });
+
   const [submissionError, setSubmissionError] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name.startsWith("mahasale.")) {
+      const mahasaleField = name.split(".")[1];
+      setFormData({
+        ...formData,
+        mahasale: {
+          ...formData.mahasale,
+          [mahasaleField]: value
+        }
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmissionError(false);
+
     try {
-      await axios.post("https://api.silksew.com/api/offer/create-offer", formData);
-      toast.success("Offer Created Successfully!");
-      setFormData({
-        code: "",
-        offerType: "percentage",
-        value: "",
-        description: "",
-        startDate: "",
-        endDate: "",
-        eligibleProducts: "",
-        category: "", // reset category
-        active: true,
-      });
+      const submitData = {
+        code: formData.code,
+        offerScope: formData.offerScope,
+        offerType: formData.offerType,
+        value: Number(formData.value),
+        description: formData.description,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        price: Number(formData.price) || 0,
+        active: formData.active,
+      };
+
+      if (formData.offerScope === "category") {
+        submitData.category = formData.category;
+         submitData.subcategory = formData.subcategory;
+      } else if (formData.offerScope === "product") {
+        submitData.eligibleProducts = formData.eligibleProducts
+          .split(",")
+          .map(id => id.trim())
+          .filter(id => id.length > 0);
+      } else if (formData.offerScope === "user") {
+        submitData.eligibleUsers = formData.eligibleUsers
+          .split(",")
+          .map(id => id.trim())
+          .filter(id => id.length > 0);
+      } else if (formData.offerScope === "mahasale") {
+        submitData.mahasale = formData.mahasale;
+      }
+
+      const response = await axios.post(
+        "https://api.silksew.com/api/offer/create-offer",
+        submitData,
+        {
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Offer Created Successfully!");
+        setFormData({
+          code: "",
+          offerScope: "category",
+          offerType: "percentage",
+          value: "",
+          description: "",
+          startDate: "",
+          endDate: "",
+          eligibleProducts: "",
+          eligibleUsers: "",
+          category: "",
+          price: "",
+          active: true,
+          mahasale: {
+            festivalName: "",
+            bannerImage: "",
+            status: "COMING SOON",
+            themeColor: "#ff3e6c",
+            featuredText: ""
+          }
+        });
+      } else {
+        throw new Error(response.data.message || "Failed to create offer");
+      }
     } catch (error) {
       console.error("Error creating offer", error);
       setSubmissionError(true);
-      toast.error("Failed to create offer. Please try again.");
-      setTimeout(() => setSubmissionError(false), 500); // Reset shake after animation
+      toast.error(error.response?.data?.message || "Failed to create offer. Please try again.");
+      setTimeout(() => setSubmissionError(false), 500);
     }
   };
 
   return (
     <>
-      <style>
-        {`
-          .offer-form-container {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
-            padding: 48px 32px 24px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          }
+      <div className="mt-5 flex justify-center items-center min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 px-6 py-12 font-sans">
+        <div
+          className={`bg-white p-8 rounded-lg shadow-2xl w-full max-w-4xl transition-all duration-300 ${submissionError ? "animate-shake" : ""}`}
+        >
+          <h2 className="text-center text-black mb-6 text-2xl font-semibold">Create Offer</h2>
 
-          .offer-form {
-            background-color: #ffffff;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            animation: fadeInScale 0.5s ease-out;
-          }
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Info */}
+            <div className="mb-6 p-4 border border-gray-200 rounded-lg">
+              <div className="font-semibold mb-4 text-indigo-600">Basic Information</div>
 
-          .offer-form.shake {
-            animation: shake 0.4s ease-in-out;
-          }
-
-          @keyframes fadeInScale {
-            from {
-              opacity: 0;
-              transform: scale(0.95);
-            }
-            to {
-              opacity: 1;
-              transform: scale(1);
-            }
-          }
-
-          @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-8px); }
-            40%, 80% { transform: translateX(8px); }
-          }
-
-          .offer-form:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-          }
-
-          .offer-form h2 {
-            text-align: center;
-            color: #4f46e5;
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-            font-weight: 600;
-          }
-
-          .offer-form form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-          }
-
-          .offer-form label {
-            font-size: 0.95rem;
-            color: #1f2937;
-            font-weight: 500;
-            margin-bottom: 0.3rem;
-            display: block;
-            transition: transform 0.2s ease, color 0.2s ease;
-          }
-
-          .offer-form label:hover {
-            transform: translateY(-2px);
-            color: #4f46e5;
-          }
-
-          .offer-form input[type="text"],
-          .offer-form input[type="number"],
-          .offer-form input[type="date"],
-          .offer-form select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            color: #1f2937;
-            background: #f9fafb;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-          }
-
-          .offer-form input[type="text"]:focus,
-          .offer-form input[type="number"]:focus,
-          .offer-form input[type="date"]:focus,
-          .offer-form select:focus {
-            outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-            transform: scale(1.02);
-            animation: glow 1s infinite alternate;
-          }
-
-          @keyframes glow {
-            from {
-              box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-            }
-            to {
-              box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.2);
-            }
-          }
-
-          .offer-form input[type="checkbox"] {
-            margin-left: 0.5rem;
-            accent-color: #4f46e5;
-            width: 1.2rem;
-            height: 1.2rem;
-            vertical-align: middle;
-            transition: transform 0.2s ease;
-          }
-
-          .offer-form input[type="checkbox"]:checked {
-            transform: scale(1.2);
-            animation: checkScale 0.3s ease;
-          }
-
-          @keyframes checkScale {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1.2); }
-          }
-
-          .offer-form .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.95rem;
-            color: #1f2937;
-          }
-
-          .offer-form button {
-            width: 100%;
-            padding: 0.85rem;
-            background: #4f46e5;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 1rem;
-            transition: background 0.2s ease, transform 0.2s ease;
-          }
-
-          .offer-form button:hover {
-            background: #4338ca;
-            transform: translateY(-2px);
-            animation: pulse 0.6s infinite;
-          }
-
-          .offer-form button:active {
-            transform: scale(0.95);
-          }
-
-          @keyframes pulse {
-            0% { transform: translateY(-2px) scale(1); }
-            50% { transform: translateY(-2px) scale(1.05); }
-            100% { transform: translateY(-2px) scale(1); }
-          }
-
-          @media (max-width: 480px) {
-            .offer-form-container {
-              padding: 32px 16px 16px;
-            }
-
-            .offer-form {
-              padding: 1.5rem;
-            }
-
-            .offer-form h2 {
-              font-size: 1.5rem;
-            }
-
-            .offer-form input[type="text"]:focus,
-            .offer-form input[type="number"]:focus,
-            .offer-form input[type="date"]:focus,
-            .offer-form select:focus {
-              animation: none; /* Disable glow on mobile for performance */
-            }
-
-            .offer-form button:hover {
-              animation: none; /* Disable pulse on mobile */
-            }
-          }
-        `}
-      </style>
-      <div className="offer-form-container">
-        <div className={`offer-form ${submissionError ? "shake" : ""}`}>
-          <h2>Create Offer</h2>
-          <form onSubmit={handleSubmit}>
-            <label>Code:</label>
-            <input
-              type="text"
-              name="code"
-              value={formData.code}
-              onChange={handleChange}
-              required
-            />
-
-            {/* ✅ New Category Dropdown */}
-            <label>Category:</label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-            >
-              <option value="">-- Select Category --</option>
-              <option value="indian_fusion">Indian & Fusion Wear</option>
-              <option value="western">Western Wear</option>
-              <option value="formal">Formal Wear</option>
-            </select>
-
-            <label>Offer Type:</label>
-            <select
-              name="offerType"
-              value={formData.offerType}
-              onChange={handleChange}
-              required
-            >
-              <option value="percentage">Percentage</option>
-              <option value="flat">Flat</option>
-            </select>
-
-            <label>Value:</label>
-            <input
-              type="number"
-              name="value"
-              value={formData.value}
-              onChange={handleChange}
-              required
-            />
-
-            <label>Description:</label>
-            <input
-              type="text"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-            />
-
-            <label>Start Date:</label>
-            <input
-              type="date"
-              name="startDate"
-              value={formData.startDate}
-              onChange={handleChange}
-            />
-
-            <label>End Date:</label>
-            <input
-              type="date"
-              name="endDate"
-              value={formData.endDate}
-              onChange={handleChange}
-            />
-
-
-
-            <label className="checkbox-label">
-              Active:
+              <label className="block mb-2 font-medium">Offer Code:</label>
               <input
-                type="checkbox"
-                name="active"
-                checked={formData.active}
-                onChange={() =>
-                  setFormData({ ...formData, active: !formData.active })
-                }
+                type="text"
+                name="code"
+                value={formData.code}
+                onChange={handleChange}
+                required
+                placeholder="e.g. SUMMER25"
+                className="w-full p-3 border border-gray-300 rounded-lg mb-4"
               />
-            </label>
 
-            <button type="submit">Create Offer</button>
+              <label className="block mb-2 font-medium">Offer Scope:</label>
+              <select
+                name="offerScope"
+                value={formData.offerScope}
+                onChange={handleChange}
+                required
+                className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+              >
+                <option value="category">Category-wise</option>
+                <option value="product">Product-wise</option>
+                <option value="user">User-wise</option>
+                <option value="mahasale">Mahasale (Festival Offer)</option>
+              </select>
+
+              {formData.offerScope === "category" && (
+                <div>
+                  {/* Category */}
+                  <div>
+                    <label className="block mb-2 font-medium">Category:</label>
+                    <select
+                      name="category"
+                      value={formData.category}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setFormData((prev) => ({ ...prev, subcategory: "" })); // reset subcategory when category changes
+                      }}
+                      required
+                      className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+                    >
+                      <option value="">-- Select Category --</option>
+                      {categories.map((cat) => (
+                        <option key={cat.value} value={cat.value}>
+                          {cat.label} {/* 👈 use label for display */}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Subcategory */}
+                  {formData.category && (
+                    <div>
+                      <label className="block mb-2 font-medium">Subcategory:</label>
+                      <select
+                        name="subcategory"
+                        value={formData.subcategory || ""}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+                      >
+                        <option value="">-- Select Subcategory --</option>
+                        {subcategories[formData.category]?.map((sub) => (
+                          <option key={sub} value={sub}>
+                            {sub} {/* 👈 subcategory string */}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              )}
+
+
+
+              {formData.offerScope === "product" && (
+                <div>
+                  <label className="block mb-2 font-medium">Eligible Products (comma-separated IDs):</label>
+                  <input
+                    type="text"
+                    name="eligibleProducts"
+                    value={formData.eligibleProducts}
+                    onChange={handleChange}
+                    required
+                    placeholder="e.g. 650abc1234abcd5678ef9012"
+                    className="w-full p-3 border border-gray-300 rounded-lg mb-2"
+                  />
+                  <small className="text-gray-500 italic">Enter valid MongoDB ObjectIDs separated by commas</small>
+                </div>
+              )}
+
+              {formData.offerScope === "user" && (
+                <div>
+                  <label className="block mb-2 font-medium">Eligible Users (comma-separated IDs):</label>
+                  <input
+                    type="text"
+                    name="eligibleUsers"
+                    value={formData.eligibleUsers}
+                    onChange={handleChange}
+                    required
+                    placeholder="e.g. 650abc1234abcd5678ef9012"
+                    className="w-full p-3 border border-gray-300 rounded-lg mb-2"
+                  />
+                  <small className="text-gray-500 italic">Enter valid MongoDB ObjectIDs separated by commas</small>
+                </div>
+              )}
+
+              {formData.offerScope === "mahasale" && (
+                <div className="bg-amber-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                  <h3 className="text-orange-600 mb-4 text-lg">🎉 Mahasale (Festival Offer) Details</h3>
+
+                  <label className="block mb-2 font-medium">Festival Name:</label>
+                  <input
+                    type="text"
+                    name="mahasale.festivalName"
+                    value={formData.mahasale.festivalName}
+                    onChange={handleChange}
+                    required
+                    placeholder="e.g. Diwali Sale"
+                    className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+                  />
+
+                  <label className="block mb-2 font-medium">Banner Image URL:</label>
+                  <input
+                    type="url"
+                    name="mahasale.bannerImage"
+                    value={formData.mahasale.bannerImage}
+                    onChange={handleChange}
+                    placeholder="https://example.com/banner.jpg"
+                    className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+                  />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block mb-2 font-medium">Status:</label>
+                      <select
+                        name="mahasale.status"
+                        value={formData.mahasale.status}
+                        onChange={handleChange}
+                        className="w-full p-3 border border-gray-300 rounded-lg"
+                      >
+                        <option value="COMING SOON">COMING SOON</option>
+                        <option value="LIVE NOW">LIVE NOW</option>
+                        <option value="ENDED">ENDED</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block mb-2 font-medium">Theme Color:</label>
+                      <div className="flex items-center">
+                        <input
+                          type="color"
+                          name="mahasale.themeColor"
+                          value={formData.mahasale.themeColor}
+                          onChange={handleChange}
+                          className="w-14 h-10 mr-2 border rounded"
+                        />
+                        <input
+                          type="text"
+                          name="mahasale.themeColor"
+                          value={formData.mahasale.themeColor}
+                          onChange={handleChange}
+                          placeholder="#ff3e6c"
+                          className="flex-1 p-2 border border-gray-300 rounded-lg"
+                        />
+                        <span
+                          className="ml-2 w-8 h-8 rounded border"
+                          style={{ backgroundColor: formData.mahasale.themeColor }}
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <label className="block mb-2 font-medium">Featured Text:</label>
+                  <textarea
+                    name="mahasale.featuredText"
+                    value={formData.mahasale.featuredText}
+                    onChange={handleChange}
+                    rows="2"
+                    placeholder="Special festival offer description"
+                    className="w-full p-3 border border-gray-300 rounded-lg"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Discount Details */}
+            <div className="mb-6 p-4 border border-gray-200 rounded-lg">
+              <div className="font-semibold mb-4 text-indigo-600">Discount Details</div>
+
+              <label className="block mb-2 font-medium">Offer Type:</label>
+              <select
+                name="offerType"
+                value={formData.offerType}
+                onChange={handleChange}
+                required
+                className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+              >
+                <option value="percentage">Percentage</option>
+                <option value="flat">Flat Amount</option>
+              </select>
+
+              <label className="block mb-2 font-medium">Value:</label>
+              <input
+                type="number"
+                name="value"
+                value={formData.value}
+                onChange={handleChange}
+                required
+                min="0"
+                step={formData.offerType === "percentage" ? "1" : "0.01"}
+                placeholder={formData.offerType === "percentage" ? "e.g. 25 for 25%" : "e.g. 100 for ₹100 off"}
+                className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+              />
+
+              <label className="block mb-2 font-medium">Price (Optional):</label>
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                placeholder="e.g. 2000"
+                className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+              />
+
+              <label className="block mb-2 font-medium">Description:</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows="3"
+                placeholder="Offer description for customers"
+                className="w-full p-3 border border-gray-300 rounded-lg"
+              />
+            </div>
+
+            {/* Validity */}
+            <div className="mb-6 p-4 border border-gray-200 rounded-lg">
+              <div className="font-semibold mb-4 text-indigo-600">Validity Period</div>
+
+              <label className="block mb-2 font-medium">Start Date:</label>
+              <input
+                type="datetime-local"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                required
+                className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+              />
+
+              <label className="block mb-2 font-medium">End Date:</label>
+              <input
+                type="datetime-local"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange}
+                required
+                className="w-full p-3 border border-gray-300 rounded-lg mb-4"
+              />
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="active"
+                  checked={formData.active}
+                  onChange={() => setFormData({ ...formData, active: !formData.active })}
+                  className="w-4 h-4"
+                />
+                <label className="font-medium">Active</label>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition"
+            >
+              Create Offer
+            </button>
           </form>
         </div>
       </div>
-      <ToastContainer style={{ marginTop: 50 }} />
+
+      <ToastContainer className="mt-12" />
     </>
   );
 };

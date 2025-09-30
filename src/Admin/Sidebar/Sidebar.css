@@ -1,89 +1,4 @@
-/* .sidebar {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: white;
-    width: 250px;
-    height: 100vh;
-    padding: 20px;
-    transition: transform 0.3s ease-in-out;
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 1000;
-  }
-  
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  
-  .sidebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-  }
-  
-  .close-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-  }
-  
-  .nav-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    color: white;
-    text-decoration: none;
-    transition: background-color 0.2s;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-    margin-bottom: 10px;
-  }
-  
-  .nav-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .icon {
-    margin-right: 10px;
-    font-size: 20px;
-  }
-  
-  .logout-btn {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .logout-btn:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  
-  @media (max-width: 768px) {
-    .sidebar {
-      transform: translateX(-100%);
-      width: 100%;
-    }
-  }
-  
-   */
-
-
+/* 
 .sidebar {
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
@@ -120,8 +35,8 @@
 }
 
 nav {
-  flex: 1;                /* take available space */
-  overflow-y: auto;       /* scroll only menu */
+  flex: 1;                
+  overflow-y: auto;       
   margin-bottom: 20px;
 }
 
@@ -170,4 +85,4 @@ nav {
     transform: translateX(-100%);
     width: 100%;
   }
-}
+} */

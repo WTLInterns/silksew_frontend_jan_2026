@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import { useState, useRef, useEffect } from "react";
 // import axios from "axios";
 // import { ToastContainer, toast } from "react-toastify";
@@ -598,6 +599,8 @@
 
 
 
+=======
+>>>>>>> 7acf7c1 (Lated Updated Frontend 30-09-2025)
 
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
@@ -1101,13 +1104,13 @@ const AdminProductForm = () => {
             />
           </Form.Item>
 
-          <Form.Item name="oldPrice" label="Old Price">
+          {/* <Form.Item name="oldPrice" label="Old Price">
             <InputNumber
               style={{ width: "100%" }}
               min={0}
               placeholder="Enter old price"
             />
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item
             name="stock"
