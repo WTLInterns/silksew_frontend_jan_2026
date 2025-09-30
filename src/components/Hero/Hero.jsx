@@ -20,7 +20,7 @@ const Hero = () => {
     const fetchMahasales = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('http://localhost:5001/api/offer/mahasales/active');
+        const response = await fetch('https://api.silksew.com/api/offer/mahasales/active');
         const data = await response.json();
         
         if (data.success && data.mahasales && data.mahasales.length > 0) {
