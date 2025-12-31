@@ -125,7 +125,10 @@
 // export default FavoritesPage;
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4c7c9e1cea81d4fdda1239bb7fe056d515d6c90b
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heart, ArrowLeft, Loader2, Trash2 } from "lucide-react";
@@ -257,3 +260,9 @@ const FavoritesPage = () => {
 };
 
 export default FavoritesPage;
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 4c7c9e1cea81d4fdda1239bb7fe056d515d6c90b
