@@ -377,7 +377,7 @@ const AdminProductForm = () => {
         productData,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${sessionStorage.getItem("token") || localStorage.getItem("token")}`,
             "Content-Type": "multipart/form-data",
           },
         }
@@ -560,7 +560,11 @@ const AdminProductForm = () => {
               placeholder="Select colors"
               onChange={handleColorChange}
               getPopupContainer={(trigger) => trigger.parentNode}
-              dropdownStyle={{ position: "absolute", maxHeight: "200px", overflowY: "auto" }}
+              styles={{
+                popup: {
+                  root: { position: "absolute", maxHeight: "200px", overflowY: "auto" }
+                }
+              }}
             >
               {[...colorOptions.map((option) => option.name), ...dynamicColors].map((color) => (
                 <Option key={color} value={color}>
